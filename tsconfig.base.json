@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": false,
+    "isolatedModules": true,
+    "noUncheckedIndexedAccess": true,
+    "baseUrl": ".",
+    "paths": {
+      "@ggseeds/shared": ["packages/shared/src/index.ts"],
+      "@ggseeds/db": ["packages/db/src/index.ts"],
+      "@ggseeds/ui": ["packages/ui/src/index.ts"],
+      "@ggseeds/scrapers": ["packages/scrapers/src/index.ts"]
+    }
+  }
+}

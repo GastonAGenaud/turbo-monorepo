@@ -1,0 +1,29 @@
+{
+  "name": "ggseeds-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "format": "prettier --write .",
+    "db:generate": "pnpm --filter @ggseeds/db db:generate",
+    "db:migrate": "pnpm --filter @ggseeds/db db:migrate",
+    "db:seed": "pnpm --filter @ggseeds/db db:seed",
+    "import:all": "pnpm --filter @ggseeds/scrapers import all",
+    "import:merlin": "pnpm --filter @ggseeds/scrapers import merlin",
+    "import:dutch": "pnpm --filter @ggseeds/scrapers import dutch"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.10",
+    "eslint": "9.21.0",
+    "eslint-config-prettier": "10.1.1",
+    "prettier": "3.5.2",
+    "turbo": "2.4.4",
+    "typescript": "5.8.2",
+    "vitest": "3.0.8",
+    "@eslint/js": "9.21.0"
+  }
+}

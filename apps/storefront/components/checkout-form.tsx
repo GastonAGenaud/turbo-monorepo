@@ -1,0 +1,99 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+import { Button, Input, Label, Textarea } from "@ggseeds/ui";
+
+import { useCart } from "./cart-provider";
+
+export function CheckoutForm() {
+  const router = useRouter();
+  const { items, clear } = useCart();
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function onSubmit(formData: FormData) {
+    setLoading(true);
+    setMessage(null);
+
+    const payload = {
+      fullName: String(formData.get("fullName") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      phone: String(formData.get("phone") ?? ""),
+      addressLine1: String(formData.get("addressLine1") ?? ""),
+      addressLine2: String(formData.get("addressLine2") ?? ""),
+      city: String(formData.get("city") ?? ""),
+      postalCode: String(formData.get("postalCode") ?? ""),
+      notes: String(formData.get("notes") ?? ""),
+      items,
+    };
+
+    const response = await fetch("/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      setMessage(body?.error ?? "No se pudo crear la orden");
+      setLoading(false);
+      return;
+    }
+
+    const body = await response.json();
+    clear();
+    setMessage(`Orden creada: ${body.orderId}`);
+    setLoading(false);
+    router.push(`/pedidos?orderId=${body.orderId}`);
+  }
+
+  return (
+    <form
+      className="grid gap-4"
+      action={async (formData) => {
+        await onSubmit(formData);
+      }}
+    >
+      <div>
+        <Label htmlFor="fullName">Nombre completo</Label>
+        <Input id="fullName" name="fullName" required />
+      </div>
+      <div>
+        <Label htmlFor="email">Email</Label>
+        <Input id="email" name="email" type="email" required />
+      </div>
+      <div>
+        <Label htmlFor="phone">Teléfono</Label>
+        <Input id="phone" name="phone" />
+      </div>
+      <div>
+        <Label htmlFor="addressLine1">Dirección</Label>
+        <Input id="addressLine1" name="addressLine1" required />
+      </div>
+      <div>
+        <Label htmlFor="addressLine2">Depto/Piso</Label>
+        <Input id="addressLine2" name="addressLine2" />
+      </div>
+      <div>
+        <Label htmlFor="city">Ciudad</Label>
+        <Input id="city" name="city" defaultValue="CABA" required />
+      </div>
+      <div>
+        <Label htmlFor="postalCode">Código postal</Label>
+        <Input id="postalCode" name="postalCode" required />
+      </div>
+      <div>
+        <Label htmlFor="notes">Notas</Label>
+        <Textarea id="notes" name="notes" />
+      </div>
+
+      <Button type="submit" disabled={loading || items.length === 0}>
+        {loading ? "Procesando..." : "Confirmar pedido"}
+      </Button>
+
+      {message ? <p className="text-sm text-[color:var(--muted)]">{message}</p> : null}
+    </form>
+  );
+}

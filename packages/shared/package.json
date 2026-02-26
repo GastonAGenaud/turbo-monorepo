@@ -1,0 +1,24 @@
+{
+  "name": "@ggseeds/shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json --noEmit",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "dompurify": "3.2.4",
+    "isomorphic-dompurify": "2.21.0",
+    "pino": "9.6.0",
+    "zod": "3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.10",
+    "typescript": "5.8.2",
+    "vitest": "3.0.8"
+  }
+}

@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+}
+
+enum ProductSource {
+  MANUAL
+  MERLINGROW
+  DUTCHPASSION
+}
+
+enum StockStatus {
+  IN_STOCK
+  OUT_OF_STOCK
+  UNKNOWN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PACKING
+  SHIPPED
+  CANCELLED
+}
+
+enum ImportRunStatus {
+  SUCCESS
+  PARTIAL_SUCCESS
+  FAILED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String?
+  role          Role      @default(CUSTOMER)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  profile Profile?
+  orders  Order[]
+  cart    Cart?
+
+  accounts Account[]
+  sessions Session[]
+}
+
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  name        String
+  phone       String?
+  addressLine1 String?
+  addressLine2 String?
+  city        String?
+  postalCode  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id            String        @id @default(cuid())
+  sku           String        @unique
+  slug          String        @unique
+  name          String
+  brand         String?
+  description   String?
+  images        String[]
+  basePrice     Decimal       @db.Decimal(10, 2)
+  markupPercent Decimal       @default(15) @db.Decimal(5, 2)
+  finalPrice    Decimal       @db.Decimal(10, 2)
+  stock         Int?
+  stockStatus   StockStatus   @default(UNKNOWN)
+  tags          String[]
+  isActive      Boolean       @default(true)
+  source        ProductSource @default(MANUAL)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  sourceMeta ProductSourceMeta?
+  orderItems OrderItem[]
+  cartItems  CartItem[]
+}
+
+model ProductSourceMeta {
+  id             String        @id @default(cuid())
+  productId      String        @unique
+  source         ProductSource
+  externalId     String
+  sourceUrl      String
+  lastImportedAt DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([source, externalId])
+}
+
+model Cart {
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items CartItem[]
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  productId String
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@unique([cartId, productId])
+}
+
+model Order {
+  id            String      @id @default(cuid())
+  userId        String?
+  status        OrderStatus @default(PENDING)
+  subtotal      Decimal     @db.Decimal(10, 2)
+  shippingCost  Decimal     @default(0) @db.Decimal(10, 2)
+  total         Decimal     @db.Decimal(10, 2)
+  fullName      String
+  email         String
+  phone         String?
+  addressLine1  String
+  addressLine2  String?
+  city          String
+  postalCode    String
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  user  User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items OrderItem[]
+}
+
+model OrderItem {
+  id            String   @id @default(cuid())
+  orderId       String
+  productId     String
+  productName   String
+  unitPrice     Decimal  @db.Decimal(10, 2)
+  quantity      Int
+  subtotal      Decimal  @db.Decimal(10, 2)
+  createdAt     DateTime @default(now())
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+}
+
+model ImportRun {
+  id          String          @id @default(cuid())
+  source      ProductSource
+  startedAt   DateTime        @default(now())
+  finishedAt  DateTime?
+  durationMs  Int?
+  created     Int             @default(0)
+  updated     Int             @default(0)
+  failed      Int             @default(0)
+  status      ImportRunStatus @default(SUCCESS)
+  logs        Json?
+
+  itemErrors ImportRunItemError[]
+}
+
+model ImportRunItemError {
+  id         String   @id @default(cuid())
+  runId      String
+  externalId String?
+  message    String
+  rawPayload Json?
+  createdAt  DateTime @default(now())
+
+  run ImportRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
