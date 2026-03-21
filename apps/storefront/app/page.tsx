@@ -4,6 +4,7 @@ import { ArrowRight, Clock3, MapPin, MessageCircle, ShieldCheck, Sparkles, Truck
 import { ADMIN_WHATSAPP_DISPLAY, buildWhatsAppUrl } from "@ggseeds/shared";
 import { Button } from "@ggseeds/ui";
 
+import { FloatingSeeds } from "../components/floating-seeds";
 import { Hero3D } from "../components/hero-3d";
 import { ProductCard } from "../components/product-card";
 import { AMSTERDAM_STORY_IMAGE, CATEGORY_COPY, LEGAL_BULLETS } from "../lib/brand";
@@ -147,14 +148,15 @@ export default async function HomePage() {
         ))}
       </section>
 
-      <section id="catalogo" className="space-y-10 rounded-[36px] border border-[var(--line)] bg-[color:var(--card)]/60 px-4 py-10 md:px-8 md:py-14">
-        <div className="space-y-4 text-center">
+      <section id="catalogo" className="relative space-y-10 overflow-hidden rounded-[36px] border border-[var(--line)] bg-[color:var(--card)]/60 px-4 py-10 md:px-8 md:py-14">
+        <FloatingSeeds />
+        <div className="relative space-y-4 text-center">
           <p className="section-kicker">Catálogo premium</p>
           <h2 className="font-serif-display text-4xl md:text-5xl">Novedades en stock</h2>
           <div className="mx-auto h-1 w-20 rounded-full bg-[color:var(--accent)]" />
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product: any) => (
             <ProductCard
               key={product.id}
@@ -172,7 +174,7 @@ export default async function HomePage() {
           ))}
         </div>
 
-        <div className="flex justify-center">
+        <div className="relative flex justify-center">
           <Button asChild variant="outline" className="rounded-full px-8">
             <Link href="/catalogo">Ver todo el catálogo</Link>
           </Button>
