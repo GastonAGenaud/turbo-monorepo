@@ -39,7 +39,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
 
   return (
     <form
-      className="grid gap-4"
+      className="grid gap-6"
       action={async (formData) => {
         setLoading(true);
         setError(null);
@@ -85,22 +85,22 @@ export function ProductForm({ categories, product }: ProductFormProps) {
         router.refresh();
       }}
     >
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 rounded-[24px] border border-[var(--line)] bg-white/5 p-4 md:grid-cols-2">
         <div>
           <Label htmlFor="sku">SKU</Label>
-          <Input id="sku" name="sku" defaultValue={product?.sku} required />
+          <Input id="sku" name="sku" defaultValue={product?.sku} required className="mt-2 rounded-2xl bg-black/20" />
         </div>
         <div>
           <Label htmlFor="slug">Slug</Label>
-          <Input id="slug" name="slug" defaultValue={product?.slug} required />
+          <Input id="slug" name="slug" defaultValue={product?.slug} required className="mt-2 rounded-2xl bg-black/20" />
         </div>
         <div>
           <Label htmlFor="name">Nombre</Label>
-          <Input id="name" name="name" defaultValue={product?.name} required />
+          <Input id="name" name="name" defaultValue={product?.name} required className="mt-2 rounded-2xl bg-black/20" />
         </div>
         <div>
           <Label htmlFor="brand">Marca</Label>
-          <Input id="brand" name="brand" defaultValue={product?.brand ?? ""} />
+          <Input id="brand" name="brand" defaultValue={product?.brand ?? ""} className="mt-2 rounded-2xl bg-black/20" />
         </div>
         <div>
           <Label htmlFor="basePrice">Precio base</Label>
@@ -110,6 +110,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
             type="number"
             defaultValue={product?.basePrice ?? 0}
             onChange={(event) => setBasePrice(Number(event.target.value))}
+            className="mt-2 rounded-2xl bg-black/20"
             required
           />
         </div>
@@ -121,16 +122,17 @@ export function ProductForm({ categories, product }: ProductFormProps) {
             type="number"
             defaultValue={product?.markupPercent ?? 15}
             onChange={(event) => setMarkupPercent(Number(event.target.value))}
+            className="mt-2 rounded-2xl bg-black/20"
             required
           />
         </div>
         <div>
           <Label htmlFor="stock">Stock</Label>
-          <Input id="stock" name="stock" type="number" defaultValue={product?.stock ?? ""} />
+          <Input id="stock" name="stock" type="number" defaultValue={product?.stock ?? ""} className="mt-2 rounded-2xl bg-black/20" />
         </div>
         <div>
           <Label htmlFor="stockStatus">Estado de stock</Label>
-          <select id="stockStatus" name="stockStatus" defaultValue={product?.stockStatus ?? "UNKNOWN"} className="h-10 w-full rounded-md border border-[var(--line)] bg-[color:var(--card)] px-3">
+          <select id="stockStatus" name="stockStatus" defaultValue={product?.stockStatus ?? "UNKNOWN"} className="mt-2 h-11 w-full rounded-2xl border border-[var(--line)] bg-black/20 px-3">
             <option value="IN_STOCK">IN_STOCK</option>
             <option value="OUT_OF_STOCK">OUT_OF_STOCK</option>
             <option value="UNKNOWN">UNKNOWN</option>
@@ -138,7 +140,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
         </div>
         <div>
           <Label htmlFor="categoryId">Categoría</Label>
-          <select id="categoryId" name="categoryId" defaultValue={product?.categoryId ?? ""} className="h-10 w-full rounded-md border border-[var(--line)] bg-[color:var(--card)] px-3">
+          <select id="categoryId" name="categoryId" defaultValue={product?.categoryId ?? ""} className="mt-2 h-11 w-full rounded-2xl border border-[var(--line)] bg-black/20 px-3">
             <option value="">Sin categoría</option>
             {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>
@@ -153,7 +155,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
             id="source"
             name="source"
             defaultValue={product?.source ?? "MANUAL"}
-            className="h-10 w-full rounded-md border border-[var(--line)] bg-[color:var(--card)] px-3"
+            className="mt-2 h-11 w-full rounded-2xl border border-[var(--line)] bg-black/20 px-3"
           >
             <option value="MANUAL">MANUAL</option>
             <option value="MERLINGROW">MERLINGROW</option>
@@ -164,21 +166,21 @@ export function ProductForm({ categories, product }: ProductFormProps) {
 
       <div>
         <Label htmlFor="images">Imágenes (URLs separadas por coma)</Label>
-        <Input id="images" name="images" defaultValue={product?.images.join(", ") ?? ""} />
+        <Input id="images" name="images" defaultValue={product?.images.join(", ") ?? ""} className="mt-2 rounded-2xl bg-black/20" />
       </div>
 
       <div>
         <Label htmlFor="tags">Tags (separadas por coma)</Label>
-        <Input id="tags" name="tags" defaultValue={product?.tags.join(", ") ?? ""} />
+        <Input id="tags" name="tags" defaultValue={product?.tags.join(", ") ?? ""} className="mt-2 rounded-2xl bg-black/20" />
       </div>
 
       <div>
         <Label htmlFor="description">Descripción</Label>
-        <Textarea id="description" name="description" defaultValue={product?.description ?? ""} />
+        <Textarea id="description" name="description" defaultValue={product?.description ?? ""} className="mt-2 rounded-2xl bg-black/20" />
       </div>
 
-      <div className="rounded-xl border border-[var(--line)] bg-[color:var(--panel)] p-4 text-sm">
-        <p className="font-medium text-[color:var(--foreground)]">
+      <div className="rounded-[24px] border border-[var(--line)] bg-white/5 p-4 text-sm">
+        <p className="font-medium text-[color:var(--fg)]">
           Precio final estimado: ${finalPricePreview.toLocaleString("es-AR")}
         </p>
         {product?.source && product.source !== "MANUAL" ? (
@@ -193,11 +195,11 @@ export function ProductForm({ categories, product }: ProductFormProps) {
         )}
       </div>
 
-      <label className="flex items-center gap-2">
+      <label className="flex items-center gap-2 text-sm text-[color:var(--muted)]">
         <input type="checkbox" name="isActive" defaultChecked={product?.isActive ?? true} /> Activo
       </label>
 
-      <Button type="submit" disabled={loading}>
+      <Button type="submit" disabled={loading} className="rounded-full px-6">
         {loading ? "Guardando..." : isEdit ? "Actualizar producto" : "Crear producto"}
       </Button>
 

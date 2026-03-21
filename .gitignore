@@ -9,7 +9,6 @@ coverage
 .turbo
 playwright-report
 test-results
-pnpm-lock.yaml
 prisma/dev.db
 .vercel
 .env*.local

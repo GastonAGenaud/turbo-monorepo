@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@ggseeds/ui";
 import { db } from "@ggseeds/db";
 
+import { AdminPageHeader } from "../../components/admin-page-header";
 import { requireAdminSession } from "../../lib/admin-session";
 
 export default async function CategoriesPage() {
@@ -18,10 +19,14 @@ export default async function CategoriesPage() {
   });
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-3xl font-semibold">Categorías</h1>
+    <div className="space-y-6">
+      <AdminPageHeader
+        eyebrow="Taxonomía"
+        title="Categorías de catálogo"
+        description="Organizá la navegación pública y el filtrado del admin con una taxonomía simple, estable y editable."
+      />
 
-      <Card className="border-[var(--line)] bg-[color:var(--card)]">
+      <Card className="surface-panel rounded-[30px]">
         <CardHeader>
           <CardTitle>Nueva categoría</CardTitle>
         </CardHeader>
@@ -45,23 +50,23 @@ export default async function CategoriesPage() {
               });
             }}
           >
-            <input name="name" placeholder="Nombre" className="rounded border border-[var(--line)] bg-[color:var(--card)] px-3 py-2" required />
-            <input name="slug" placeholder="slug" className="rounded border border-[var(--line)] bg-[color:var(--card)] px-3 py-2" required />
-            <input name="description" placeholder="Descripción" className="rounded border border-[var(--line)] bg-[color:var(--card)] px-3 py-2" />
-            <button type="submit" className="rounded bg-[color:var(--accent)] px-4 py-2 text-black md:col-span-3">
+            <input name="name" placeholder="Nombre" className="rounded-2xl border border-[var(--line)] bg-black/20 px-3 py-2.5" required />
+            <input name="slug" placeholder="slug" className="rounded-2xl border border-[var(--line)] bg-black/20 px-3 py-2.5" required />
+            <input name="description" placeholder="Descripción" className="rounded-2xl border border-[var(--line)] bg-black/20 px-3 py-2.5" />
+            <button type="submit" className="rounded-full bg-[color:var(--accent)] px-4 py-2.5 text-black md:col-span-3">
               Guardar categoría
             </button>
           </form>
         </CardContent>
       </Card>
 
-      <Card className="border-[var(--line)] bg-[color:var(--card)]">
+      <Card className="surface-panel rounded-[30px]">
         <CardHeader>
           <CardTitle>Listado</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           {categories.map((cat: any) => (
-            <div key={cat.id} className="rounded border border-[var(--line)] p-3 text-sm">
+            <div key={cat.id} className="rounded-[20px] border border-[var(--line)] bg-white/5 p-4 text-sm">
               <p className="font-medium">{cat.name}</p>
               <p className="text-[color:var(--muted)]">/{cat.slug} • {cat._count.products} productos</p>
             </div>

@@ -28,6 +28,7 @@ export function CheckoutForm() {
       fullName: String(formData.get("fullName") ?? ""),
       email: String(formData.get("email") ?? ""),
       phone: String(formData.get("phone") ?? ""),
+      contactDetails: String(formData.get("contactDetails") ?? ""),
       addressLine1: String(formData.get("addressLine1") ?? ""),
       addressLine2: String(formData.get("addressLine2") ?? ""),
       city: String(formData.get("city") ?? ""),
@@ -87,6 +88,15 @@ export function CheckoutForm() {
       <div>
         <Label htmlFor="phone">Teléfono</Label>
         <Input id="phone" name="phone" />
+      </div>
+      <div>
+        <Label htmlFor="contactDetails">Dato de contacto adicional</Label>
+        <Textarea
+          id="contactDetails"
+          name="contactDetails"
+          placeholder="Opcional: Instagram, alias, barrio, franja horaria o cualquier referencia útil para contactarte."
+          className="min-h-[92px]"
+        />
       </div>
       <div>
         <Label htmlFor="addressLine1">Dirección</Label>

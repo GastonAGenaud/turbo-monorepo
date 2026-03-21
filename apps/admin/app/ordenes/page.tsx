@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@ggseeds/ui";
 import { db } from "@ggseeds/db";
 
+import { AdminPageHeader } from "../../components/admin-page-header";
 import { OrderStatusSelect } from "../../components/order-status-select";
 import { requireAdminSession } from "../../lib/admin-session";
 
@@ -19,18 +20,22 @@ export default async function OrdersPage() {
   });
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-3xl font-semibold">Órdenes</h1>
+    <div className="space-y-6">
+      <AdminPageHeader
+        eyebrow="Ventas"
+        title="Órdenes y seguimiento"
+        description="Revisá pedidos pendientes, datos de contacto y estado logístico para coordinar el pago manual por WhatsApp."
+      />
 
-      <Card className="border-[var(--line)] bg-[color:var(--card)]">
+      <Card className="surface-panel rounded-[30px]">
         <CardHeader>
           <CardTitle>Gestión de estados</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {orders.map((order: any) => (
-            <div key={order.id} className="rounded border border-[var(--line)] p-3">
+            <div key={order.id} className="rounded-[24px] border border-[var(--line)] bg-white/5 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="font-medium">
+                <p className="font-medium text-[color:var(--fg)]">
                   #{order.id.slice(0, 8)} · ${Number(order.total).toLocaleString("es-AR")}
                 </p>
                 <OrderStatusSelect orderId={order.id} status={order.status} />

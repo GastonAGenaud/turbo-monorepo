@@ -20,6 +20,7 @@ Implementado y probado en local:
 
 - catálogo, carrito, checkout, auth y perfil
 - admin con CRUD de productos/órdenes/imports
+- admin actualizado con shell visual alineada al storefront
 - edición manual de `basePrice` y `markupPercent` desde admin con recálculo de `finalPrice`
 - import real desde MerlinGrow y Dutch Passion hacia PostgreSQL
 - CloudFormation validado por AWS CLI
@@ -77,6 +78,14 @@ Migraciones nuevas aplicadas en esta iteración:
 - `202603211415_sync_production_schema`
 
 Estas migraciones alinean la base productiva con el schema actual de Prisma para storefront, auth y auditoría admin.
+
+## UX reciente
+
+- storefront migrado a una dirección visual editorial inspirada en Amsterdam
+- popup legal de mayoría de edad persistente y ajustado para mobile
+- registro con captcha matemático firmado por servidor
+- admin con shell, login y vistas principales rediseñadas para mayor claridad operativa
+- checkout con campo opcional de contacto adicional persistido dentro de la orden
 
 ## Levantar local
 

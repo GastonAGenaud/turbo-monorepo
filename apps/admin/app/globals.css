@@ -1,17 +1,105 @@
 @import "tailwindcss";
 
 :root {
-  --bg: #060b0b;
-  --fg: #e7f8f4;
-  --muted: #8ca39d;
-  --line: #1b2825;
-  --card: #0f1716;
-  --accent: #17f7b5;
+  --bg: #06090d;
+  --bg-soft: #0a1017;
+  --fg: #ecf2f8;
+  --card: rgba(12, 17, 24, 0.86);
+  --card-strong: #101722;
+  --muted: #93a0b0;
+  --accent: #17e7b0;
+  --accent-strong: #6cf4d0;
+  --line: rgba(255, 255, 255, 0.08);
+  --shadow: 0 32px 100px rgba(0, 0, 0, 0.42);
 }
 
 html,
 body {
-  background: radial-gradient(circle at right top, rgba(23, 247, 181, 0.12), transparent 34%),
-    radial-gradient(circle at 20% 15%, rgba(31, 123, 102, 0.24), transparent 28%), var(--bg);
+  background:
+    radial-gradient(circle at top right, rgba(23, 231, 176, 0.12), transparent 24%),
+    radial-gradient(circle at 12% 18%, rgba(92, 210, 255, 0.08), transparent 20%),
+    linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 42%, var(--bg) 100%);
   color: var(--fg);
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-sans), sans-serif;
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.3;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+  background-size: 22px 22px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.55), transparent 70%);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+.font-serif-display {
+  font-family: var(--font-display), serif;
+  letter-spacing: -0.02em;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.glass-panel {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.surface-panel {
+  border: 1px solid var(--line);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.section-kicker {
+  color: var(--accent);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.ambient-border {
+  position: relative;
+}
+
+.ambient-border::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 50%, transparent),
+    transparent 48%,
+    rgba(255, 255, 255, 0.06)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }

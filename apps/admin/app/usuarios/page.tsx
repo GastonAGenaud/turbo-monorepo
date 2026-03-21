@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@ggseeds/ui";
 import { db } from "@ggseeds/db";
 
+import { AdminPageHeader } from "../../components/admin-page-header";
 import { requireAdminSession } from "../../lib/admin-session";
 
 export default async function UsersPage() {
@@ -20,16 +21,20 @@ export default async function UsersPage() {
   });
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-3xl font-semibold">Usuarios</h1>
+    <div className="space-y-6">
+      <AdminPageHeader
+        eyebrow="Clientes"
+        title="Usuarios y perfiles"
+        description="Controlá altas, roles y actividad de compra desde una vista compacta y fácil de revisar."
+      />
 
-      <Card className="border-[var(--line)] bg-[color:var(--card)]">
+      <Card className="surface-panel rounded-[30px]">
         <CardHeader>
           <CardTitle>Clientes y roles</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           {users.map((user: any) => (
-            <div key={user.id} className="rounded border border-[var(--line)] p-3 text-sm">
+            <div key={user.id} className="rounded-[20px] border border-[var(--line)] bg-white/5 p-4 text-sm">
               <p className="font-medium">
                 {user.email} · {user.role}
               </p>

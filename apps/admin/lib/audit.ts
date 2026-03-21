@@ -29,7 +29,7 @@ export async function writeAuditLog(entry: AuditEntry): Promise<void> {
         action: entry.action,
         entity: entry.entity,
         entityId: entry.entityId ?? null,
-        metadata: entry.metadata ?? null,
+        ...(entry.metadata ? { metadata: entry.metadata as any } : {}),
         ipAddress: entry.ipAddress ?? null,
       },
     });

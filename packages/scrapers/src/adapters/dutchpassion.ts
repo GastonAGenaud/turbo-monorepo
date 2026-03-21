@@ -152,18 +152,21 @@ function extractAttributes($: ReturnType<typeof load>): ProductAttributes {
   const descriptionText = pickFirstText($, SELECTORS.description);
   if (descriptionText) {
     const thcMatch = descriptionText.match(/THC[:\s]*(\d+[\-–]?\d*\s*%?)/i);
-    if (thcMatch && !attrs.thcContent) {
-      attrs.thcContent = thcMatch[1].trim();
+    const thcValue = thcMatch?.[1];
+    if (thcValue && !attrs.thcContent) {
+      attrs.thcContent = thcValue.trim();
     }
 
     const cbdMatch = descriptionText.match(/CBD[:\s]*(\d+[\-–]?\d*\s*%?)/i);
-    if (cbdMatch && !attrs.cbdContent) {
-      attrs.cbdContent = cbdMatch[1].trim();
+    const cbdValue = cbdMatch?.[1];
+    if (cbdValue && !attrs.cbdContent) {
+      attrs.cbdContent = cbdValue.trim();
     }
 
     const flowerMatch = descriptionText.match(/floraci[oó]n[:\s]*([\d]+[\-–]?\d*\s*(?:d[ií]as|semanas|weeks|days)?)/i);
-    if (flowerMatch && !attrs.flowering) {
-      attrs.flowering = flowerMatch[1].trim();
+    const flowerValue = flowerMatch?.[1];
+    if (flowerValue && !attrs.flowering) {
+      attrs.flowering = flowerValue.trim();
     }
 
     const geneticsMatch = descriptionText.match(/(?:indica|sativa|h[ií]brida?|ruderalis)[\s/]*(?:\d+%)?/i);

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button, Card, CardContent, CardHeader, CardTitle, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@ggseeds/ui";
 import { db } from "@ggseeds/db";
 
+import { AdminPageHeader } from "../../components/admin-page-header";
 import { requireAdminSession } from "../../lib/admin-session";
 
 export default async function ProductsPage() {
@@ -18,15 +19,19 @@ export default async function ProductsPage() {
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-semibold">Productos</h1>
-        <Button asChild>
+    <div className="space-y-6">
+      <AdminPageHeader
+        eyebrow="Catálogo"
+        title="Productos y pricing"
+        description="Gestioná el catálogo manual e importado, revisá stock y ajustá markup sin perder trazabilidad de fuente."
+        actions={
+          <Button asChild className="rounded-full px-5">
           <Link href="/productos/nuevo">Nuevo producto</Link>
-        </Button>
-      </div>
+          </Button>
+        }
+      />
 
-      <Card className="border-[var(--line)] bg-[color:var(--card)]">
+      <Card className="surface-panel rounded-[30px]">
         <CardHeader>
           <CardTitle>Catálogo total</CardTitle>
         </CardHeader>
@@ -56,7 +61,7 @@ export default async function ProductsPage() {
                   <TableCell>${Number(product.finalPrice).toLocaleString("es-AR")}</TableCell>
                   <TableCell>{product.stock ?? "-"}</TableCell>
                   <TableCell>
-                    <Link href={`/productos/${product.id}`} className="text-[color:var(--accent)]">
+                    <Link href={`/productos/${product.id}`} className="text-[color:var(--accent)] transition hover:opacity-80">
                       Editar
                     </Link>
                   </TableCell>
