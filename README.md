@@ -71,7 +71,12 @@ Incluye:
 - `ImportRun`, `ImportRunItemError`
 - `Setting`
 
-No fue necesaria una nueva migración para esta iteración: el schema actual ya cubría importación, stock, pricing y admin editing.
+Migraciones nuevas aplicadas en esta iteración:
+
+- `202603211410_add_category_deleted_at`
+- `202603211415_sync_production_schema`
+
+Estas migraciones alinean la base productiva con el schema actual de Prisma para storefront, auth y auditoría admin.
 
 ## Levantar local
 

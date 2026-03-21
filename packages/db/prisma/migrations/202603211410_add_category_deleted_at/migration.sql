@@ -1,0 +1,2 @@
+ALTER TABLE "Category"
+ADD COLUMN IF NOT EXISTS "deletedAt" TIMESTAMP(3);
