@@ -4,8 +4,9 @@ import { ArrowRight, Clock3, MapPin, MessageCircle, ShieldCheck, Sparkles, Truck
 import { ADMIN_WHATSAPP_DISPLAY, buildWhatsAppUrl } from "@ggseeds/shared";
 import { Button } from "@ggseeds/ui";
 
+import { Hero3D } from "../components/hero-3d";
 import { ProductCard } from "../components/product-card";
-import { AMSTERDAM_HERO_IMAGE, AMSTERDAM_STORY_IMAGE, CATEGORY_COPY, LEGAL_BULLETS } from "../lib/brand";
+import { AMSTERDAM_STORY_IMAGE, CATEGORY_COPY, LEGAL_BULLETS } from "../lib/brand";
 import { getHomeData } from "../lib/catalog";
 
 export default async function HomePage() {
@@ -86,23 +87,18 @@ export default async function HomePage() {
         </div>
 
         <div className="ambient-border relative overflow-hidden rounded-[32px] border border-[var(--line)] bg-[color:var(--card-strong)]">
-          <img
-            src={AMSTERDAM_HERO_IMAGE}
-            alt="Paisaje editorial de inspiración Amsterdam para GGseeds"
-            className="h-full min-h-[540px] w-full object-cover"
-            referrerPolicy="no-referrer"
-          />
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,9,13,0.08),rgba(7,9,13,0.55)_85%)]" />
+          <Hero3D />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,9,13,0.08),rgba(7,9,13,0.55)_85%)] dark:bg-[linear-gradient(180deg,rgba(7,9,13,0.08),rgba(7,9,13,0.55)_85%)]" />
           {heroProduct ? (
-            <div className="absolute bottom-5 left-5 right-5 rounded-[24px] border border-white/12 bg-black/35 p-4 backdrop-blur-md">
-              <p className="text-[10px] uppercase tracking-[0.28em] text-slate-300">Selección destacada</p>
+            <div className="absolute bottom-5 left-5 right-5 rounded-[24px] border border-[var(--line)] bg-[color:var(--card)]/85 p-4 backdrop-blur-md">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-[color:var(--muted)]">Selección destacada</p>
               <div className="mt-3 flex items-end justify-between gap-4">
                 <div>
-                  <p className="font-serif-display text-2xl text-white">{heroProduct.name}</p>
-                  <p className="mt-1 text-sm text-slate-300">{heroProduct.brand ?? "GGseeds selection"}</p>
+                  <p className="font-serif-display text-2xl text-[color:var(--fg)]">{heroProduct.name}</p>
+                  <p className="mt-1 text-sm text-[color:var(--muted)]">{heroProduct.brand ?? "GGseeds selection"}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Disponible</p>
+                  <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--muted)]">Disponible</p>
                   <p className="mt-1 text-base font-semibold text-[color:var(--accent)]">
                     ${Number(heroProduct.finalPrice).toLocaleString("es-AR")}
                   </p>
@@ -137,12 +133,12 @@ export default async function HomePage() {
                 <ArrowRight className="h-4 w-4 text-[color:var(--muted)] transition group-hover:text-[color:var(--accent)]" />
               </div>
               <div className="space-y-3">
-                <h3 className="font-serif-display text-3xl text-white">{category.name}</h3>
-                <p className="max-w-sm text-sm leading-7 text-slate-400">
+                <h3 className="font-serif-display text-3xl text-[color:var(--fg)]">{category.name}</h3>
+                <p className="max-w-sm text-sm leading-7 text-[color:var(--muted)]">
                   {category.description ?? CATEGORY_COPY[category.slug] ?? "Colección curada de semillas premium con stock vivo."}
                 </p>
               </div>
-              <div className="flex items-center justify-between text-xs uppercase tracking-[0.24em] text-slate-500">
+              <div className="flex items-center justify-between text-xs uppercase tracking-[0.24em] text-[color:var(--muted)]">
                 <span>Explorar colección</span>
                 <span>{category.slug.replace(/-/g, " ")}</span>
               </div>
@@ -151,7 +147,7 @@ export default async function HomePage() {
         ))}
       </section>
 
-      <section id="catalogo" className="space-y-10 rounded-[36px] border border-[var(--line)] bg-black/25 px-4 py-10 md:px-8 md:py-14">
+      <section id="catalogo" className="space-y-10 rounded-[36px] border border-[var(--line)] bg-[color:var(--card)]/60 px-4 py-10 md:px-8 md:py-14">
         <div className="space-y-4 text-center">
           <p className="section-kicker">Catálogo premium</p>
           <h2 className="font-serif-display text-4xl md:text-5xl">Novedades en stock</h2>

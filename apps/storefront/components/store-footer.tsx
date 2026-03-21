@@ -5,7 +5,7 @@ import { ADMIN_WHATSAPP_DISPLAY, MANUAL_PAYMENT_COPY, SHIPPING_COPY, buildWhatsA
 
 export function StoreFooter() {
   return (
-    <footer id="contacto" className="mt-24 border-t border-[var(--line)] bg-black/25">
+    <footer id="contacto" className="mt-24 border-t border-[var(--line)] bg-[color:var(--card)]/50">
       <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 text-sm md:grid-cols-[1.2fr_0.8fr_0.8fr_1fr] md:px-6 lg:px-8">
         <div className="space-y-5">
           <p className="text-lg font-semibold">

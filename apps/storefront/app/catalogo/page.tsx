@@ -19,7 +19,7 @@ export default async function CatalogPage({
   const sort =
     typeof params.sort === "string" && ["price_asc", "price_desc", "newest"].includes(params.sort)
       ? (params.sort as "price_asc" | "price_desc" | "newest")
-      : "newest";
+      : "price_asc";
 
   const { items, categories, brands } = await getCatalog({
     query,
@@ -60,7 +60,11 @@ export default async function CatalogPage({
               </div>
             </label>
 
-            <select name="category" defaultValue={category} className="rounded-full border border-[var(--line)] bg-transparent px-4 py-3">
+            <select
+              name="category"
+              defaultValue={category}
+              className="rounded-full border border-[var(--line)] bg-[color:var(--card)] px-4 py-3 text-[color:var(--fg)] [&_option]:bg-[color:var(--card-strong)] [&_option]:text-[color:var(--fg)]"
+            >
               <option value="">Todas las categorías</option>
               {categories.map((cat: any) => (
                 <option key={cat.id} value={cat.slug}>
@@ -68,7 +72,11 @@ export default async function CatalogPage({
                 </option>
               ))}
             </select>
-            <select name="brand" defaultValue={brand} className="rounded-full border border-[var(--line)] bg-transparent px-4 py-3">
+            <select
+              name="brand"
+              defaultValue={brand}
+              className="rounded-full border border-[var(--line)] bg-[color:var(--card)] px-4 py-3 text-[color:var(--fg)] [&_option]:bg-[color:var(--card-strong)] [&_option]:text-[color:var(--fg)]"
+            >
               <option value="">Todas las marcas</option>
               {brands.map((item: string) => (
                 <option key={item} value={item}>
@@ -76,9 +84,13 @@ export default async function CatalogPage({
                 </option>
               ))}
             </select>
-            <select name="sort" defaultValue={sort} className="rounded-full border border-[var(--line)] bg-transparent px-4 py-3">
-              <option value="newest">Novedad</option>
+            <select
+              name="sort"
+              defaultValue={sort}
+              className="rounded-full border border-[var(--line)] bg-[color:var(--card)] px-4 py-3 text-[color:var(--fg)] [&_option]:bg-[color:var(--card-strong)] [&_option]:text-[color:var(--fg)]"
+            >
               <option value="price_asc">Precio menor</option>
+              <option value="newest">Novedad</option>
               <option value="price_desc">Precio mayor</option>
             </select>
             <label className="flex items-center gap-2 rounded-full border border-[var(--line)] px-4 py-3 text-sm">

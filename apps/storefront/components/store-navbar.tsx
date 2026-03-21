@@ -41,19 +41,24 @@ export function StoreNavbar() {
               <Search className="h-4 w-4" />
             </Link>
           </Button>
-          <Button asChild size="sm" variant="ghost" className="relative px-2 text-[color:var(--muted)] hover:text-[color:var(--fg)]">
+          <Button asChild size="sm" variant="ghost" className="group relative px-2 text-[color:var(--muted)] hover:text-[color:var(--fg)]">
             <Link href="/carrito" aria-label={`Carrito con ${cartCount} items`}>
-              <ShoppingBag className="h-4 w-4" />
+              <ShoppingBag className="h-4 w-4 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
               {cartCount > 0 ? (
-                <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[color:var(--accent)] px-1 text-[10px] font-bold text-[#07110d]">
+                <span className="absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-[color:var(--accent)] px-1 text-[10px] font-bold text-[#07110d] transition-transform duration-300 group-hover:scale-110">
                   {cartCount}
                 </span>
               ) : null}
             </Link>
           </Button>
-          <Button asChild size="sm" variant="outline">
+          <Button
+            asChild
+            size="sm"
+            variant="outline"
+            className="transition-all duration-300 hover:border-green-500/40 hover:bg-green-500/10 hover:text-green-600 hover:shadow-[0_0_16px_rgba(37,211,102,0.18)] dark:hover:text-green-400"
+          >
             <a href={buildWhatsAppUrl()} target="_blank" rel="noreferrer">
-              <MessageCircle className="mr-2 h-4 w-4" />
+              <MessageCircle className="mr-2 h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
               WhatsApp
             </a>
           </Button>
