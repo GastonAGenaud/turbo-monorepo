@@ -12,6 +12,8 @@ Al abrir la tienda aparece un popup de descargo legal:
 
 El popup se guarda localmente en el navegador para no repetirse en cada visita.
 
+En mobile el modal usa un layout tipo sheet, con scroll interno y botones a ancho completo para no romper el viewport.
+
 ### Home
 
 La portada nueva muestra:
@@ -54,6 +56,7 @@ El carrito permite:
 En checkout:
 
 - se cargan datos de contacto y envío
+- se puede dejar un dato de contacto adicional opcional
 - se genera la orden
 - se abre WhatsApp para coordinar pago y despacho con administración
 
@@ -69,6 +72,16 @@ El registro ahora incluye:
 El captcha ayuda a reducir altas automáticas.
 
 ## Admin
+
+### Experiencia visual
+
+El panel ahora comparte la misma dirección visual del storefront:
+
+- tipografía editorial
+- panels con glass effect
+- navegación superior persistente
+- headers más claros por sección
+- mejor jerarquía para productos, órdenes, ETL y auditoría
 
 ### Panel de imports
 

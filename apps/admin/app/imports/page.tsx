@@ -1,6 +1,7 @@
 import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@ggseeds/ui";
 import { db } from "@ggseeds/db";
 
+import { AdminPageHeader } from "../../components/admin-page-header";
 import { ImportActions } from "../../components/import-actions";
 import { requireAdminSession } from "../../lib/admin-session";
 import { currentImportExecutionMode } from "../../lib/import-execution";
@@ -61,13 +62,13 @@ export default async function ImportsPage() {
 
   return (
     <div className="space-y-6">
+      <AdminPageHeader
+        eyebrow="ETL"
+        title="Importador y refresh de imágenes"
+        description={`Modo actual: ${executionMode === "ecs" ? "AWS ECS remoto recomendado para producción." : "ejecución inline local."} Revisá runs, errores y estado por fuente sin salir del panel.`}
+      />
+
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-semibold">Importador</h1>
-          <p className="text-sm text-[color:var(--muted)]">
-            Modo actual: {executionMode === "ecs" ? "AWS ECS (recomendado para producción en Vercel)" : "inline local"}.
-          </p>
-        </div>
         <div className="flex flex-wrap gap-2">
           <Badge variant={executionMode === "ecs" ? "default" : "warning"}>{executionMode === "ecs" ? "ECS remoto" : "Inline local"}</Badge>
           <Badge variant={runningRuns.length > 0 ? "warning" : "outline"}>
@@ -78,7 +79,7 @@ export default async function ImportsPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card>
+        <Card className="glass-panel rounded-[28px]">
           <CardHeader className="pb-3">
             <CardDescription>Último run</CardDescription>
             <CardTitle>{lastRun ? lastRun.source : "Sin datos"}</CardTitle>
@@ -89,7 +90,7 @@ export default async function ImportsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="glass-panel rounded-[28px]">
           <CardHeader className="pb-3">
             <CardDescription>Resumen reciente</CardDescription>
             <CardTitle>{completedRuns.length} runs finalizados</CardTitle>
@@ -101,7 +102,7 @@ export default async function ImportsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="glass-panel rounded-[28px]">
           <CardHeader className="pb-3">
             <CardDescription>Duración media</CardDescription>
             <CardTitle>{formatDuration(avgDurationMs)}</CardTitle>
@@ -111,7 +112,7 @@ export default async function ImportsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="glass-panel rounded-[28px]">
           <CardHeader className="pb-3">
             <CardDescription>Últimas fuentes</CardDescription>
             <CardTitle className="text-base">Merlin y Dutch</CardTitle>
@@ -133,7 +134,7 @@ export default async function ImportsPage() {
         </Card>
       </div>
 
-      <Card className="border-[var(--line)] bg-[color:var(--card)]">
+      <Card className="surface-panel rounded-[30px]">
         <CardHeader>
           <CardTitle>Ejecución manual</CardTitle>
           <CardDescription>
@@ -146,7 +147,7 @@ export default async function ImportsPage() {
       </Card>
 
       {runningRuns.length > 0 ? (
-        <Card className="border-[var(--line)] bg-[color:var(--card)]">
+        <Card className="surface-panel rounded-[30px]">
           <CardHeader>
             <CardTitle>Runs en curso</CardTitle>
             <CardDescription>Estos runs ya fueron creados por el ETL pero todavía no cerraron su estado final.</CardDescription>
@@ -167,7 +168,7 @@ export default async function ImportsPage() {
         </Card>
       ) : null}
 
-      <Card className="border-[var(--line)] bg-[color:var(--card)]">
+      <Card className="surface-panel rounded-[30px]">
         <CardHeader>
           <CardTitle>Historial de runs</CardTitle>
           <CardDescription>Detalle de los últimos 50 runs registrados por el ETL.</CardDescription>

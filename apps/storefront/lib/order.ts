@@ -46,7 +46,11 @@ export async function createOrderFromCheckout(input: unknown, userId?: string) {
       addressLine2: payload.addressLine2,
       city: payload.city,
       postalCode: payload.postalCode,
-      notes: [payload.notes, `${MANUAL_PAYMENT_COPY} ${SHIPPING_COPY} Contacto admin: ${ADMIN_WHATSAPP_DISPLAY}.`]
+      notes: [
+        payload.contactDetails ? `Datos de contacto adicionales: ${payload.contactDetails}` : null,
+        payload.notes,
+        `${MANUAL_PAYMENT_COPY} ${SHIPPING_COPY} Contacto admin: ${ADMIN_WHATSAPP_DISPLAY}.`,
+      ]
         .filter(Boolean)
         .join("\n\n"),
       items: {

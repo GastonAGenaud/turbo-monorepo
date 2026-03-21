@@ -18,6 +18,7 @@ export const checkoutSchema = z.object({
   fullName: z.string().min(2).max(120),
   email: z.string().email(),
   phone: z.string().max(32).optional().nullable(),
+  contactDetails: z.string().max(280).optional().nullable(),
   addressLine1: z.string().min(4).max(180),
   addressLine2: z.string().max(180).optional().nullable(),
   city: z.string().min(2).max(120),
