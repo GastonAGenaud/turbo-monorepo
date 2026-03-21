@@ -7,7 +7,7 @@ import { SeedModel } from "./seed-model";
 
 export default function HeroSeedScene() {
   return (
-    <div className="pointer-events-none h-full min-h-[540px] w-full">
+    <div className="pointer-events-none w-full" style={{ height: "540px" }}>
       <Canvas
         camera={{ position: [0, 0.25, 3.6], fov: 34 }}
         dpr={[1, 1.5]}

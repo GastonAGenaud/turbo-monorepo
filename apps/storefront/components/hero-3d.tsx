@@ -16,8 +16,7 @@ export function Hero3D() {
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    const lowEnd = navigator.hardwareConcurrency < 4;
-    if (prefersReduced || lowEnd) setShouldRender3D(false);
+    if (prefersReduced) setShouldRender3D(false);
   }, []);
 
   if (!shouldRender3D) {
