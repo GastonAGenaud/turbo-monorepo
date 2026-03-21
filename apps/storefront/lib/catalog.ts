@@ -8,6 +8,38 @@ interface CatalogFilters {
   sort?: "price_asc" | "price_desc" | "newest";
 }
 
+function interleaveByBrand<T extends { brand: string | null; finalPrice: unknown }>(
+  items: T[],
+): T[] {
+  const DUTCH = "Dutch Passion";
+  const MERLIN = "Merlin Seeds";
+
+  const byPrice = (a: T, b: T) =>
+    Number(a.finalPrice) - Number(b.finalPrice);
+
+  const dutch = items.filter(
+    (i) => i.brand?.toLowerCase() === DUTCH.toLowerCase(),
+  ).sort(byPrice);
+  const merlin = items.filter(
+    (i) => i.brand?.toLowerCase() === MERLIN.toLowerCase(),
+  ).sort(byPrice);
+  const others = items.filter(
+    (i) =>
+      i.brand?.toLowerCase() !== DUTCH.toLowerCase() &&
+      i.brand?.toLowerCase() !== MERLIN.toLowerCase(),
+  ).sort(byPrice);
+
+  const result: T[] = [];
+  const len = Math.max(dutch.length, merlin.length);
+  for (let i = 0; i < len; i++) {
+    const d = dutch[i];
+    const m = merlin[i];
+    if (d !== undefined) result.push(d);
+    if (m !== undefined) result.push(m);
+  }
+  return [...result, ...others];
+}
+
 export async function getHomeData() {
   const [categories, products] = await Promise.all([
     db.category.findMany({
@@ -68,12 +100,14 @@ export async function getCatalog(filters: CatalogFilters) {
     ],
   };
 
+  // For the default "price_asc" sort we apply interleaving post-query,
+  // so fetch all by price asc. Other sorts keep their DB order.
   const orderBy: any =
-    filters.sort === "price_asc"
-      ? { finalPrice: "asc" }
-      : filters.sort === "price_desc"
-        ? { finalPrice: "desc" }
-        : { createdAt: "desc" };
+    filters.sort === "price_desc"
+      ? { finalPrice: "desc" }
+      : filters.sort === "newest"
+        ? { createdAt: "desc" }
+        : { finalPrice: "asc" };
 
   const [items, categories, brands] = await Promise.all([
     db.product.findMany({
@@ -92,8 +126,14 @@ export async function getCatalog(filters: CatalogFilters) {
     }),
   ]);
 
+  // Apply Dutch/Merlin interleaving when sorting by price ascending (default)
+  const sortedItems =
+    !filters.sort || filters.sort === "price_asc"
+      ? interleaveByBrand(items)
+      : items;
+
   return {
-    items,
+    items: sortedItems,
     categories,
     brands: brands.map((item: any) => item.brand).filter(Boolean) as string[],
   };

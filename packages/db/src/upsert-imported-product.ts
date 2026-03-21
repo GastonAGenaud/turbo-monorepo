@@ -50,7 +50,7 @@ export async function upsertImportedProduct(
     description: imported.description ?? null,
     longDescription: imported.longDescription ?? null,
     attributes: imported.attributes
-      ? (imported.attributes as Prisma.InputJsonValue)
+      ? (imported.attributes as object)
       : undefined,
     images: imported.images.length > 0 ? imported.images : (existingMeta?.product.images ?? []),
     basePrice: imported.basePrice,

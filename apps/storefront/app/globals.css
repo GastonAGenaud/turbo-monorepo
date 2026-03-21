@@ -61,6 +61,15 @@ a {
   text-decoration: none;
 }
 
+select {
+  color-scheme: light dark;
+}
+
+select option {
+  background-color: var(--card-strong);
+  color: var(--fg);
+}
+
 h1,
 h2,
 h3,
