@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { db } from "./client";
 import { applyMarkup } from "@ggseeds/shared";
 import type { ImportedProduct } from "@ggseeds/shared";
@@ -49,9 +48,7 @@ export async function upsertImportedProduct(
     brand: imported.brand ?? null,
     description: imported.description ?? null,
     longDescription: imported.longDescription ?? null,
-    attributes: imported.attributes
-      ? (imported.attributes as Prisma.InputJsonValue)
-      : undefined,
+    attributes: imported.attributes ? JSON.parse(JSON.stringify(imported.attributes)) : undefined,
     images: imported.images.length > 0 ? imported.images : (existingMeta?.product.images ?? []),
     basePrice: imported.basePrice,
     markupPercent,
