@@ -60,7 +60,7 @@ export default async function CategoriesPage() {
           <CardTitle>Listado</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          {categories.map((cat) => (
+          {categories.map((cat: any) => (
             <div key={cat.id} className="rounded border border-[var(--line)] p-3 text-sm">
               <p className="font-medium">{cat.name}</p>
               <p className="text-[color:var(--muted)]">/{cat.slug} • {cat._count.products} productos</p>

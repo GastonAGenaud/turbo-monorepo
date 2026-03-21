@@ -1,5 +1,5 @@
 import { db } from "@ggseeds/db";
-import { checkoutSchema } from "@ggseeds/shared";
+import { ADMIN_WHATSAPP_DISPLAY, MANUAL_PAYMENT_COPY, SHIPPING_COPY, checkoutSchema } from "@ggseeds/shared";
 
 export async function createOrderFromCheckout(input: unknown, userId?: string) {
   const payload = checkoutSchema.parse(input);
@@ -7,15 +7,15 @@ export async function createOrderFromCheckout(input: unknown, userId?: string) {
   const products = await db.product.findMany({
     where: {
       id: {
-        in: payload.items.map((item) => item.productId),
+        in: payload.items.map((item: any) => item.productId),
       },
       isActive: true,
     },
   });
 
-  const productById = new Map(products.map((product) => [product.id, product]));
+  const productById = new Map<string, any>(products.map((product: any) => [String(product.id), product] as [string, any]));
 
-  const orderItems = payload.items.map((item) => {
+  const orderItems = payload.items.map((item: any) => {
     const product = productById.get(item.productId);
     if (!product) {
       throw new Error(`Producto inválido: ${item.productId}`);
@@ -46,7 +46,9 @@ export async function createOrderFromCheckout(input: unknown, userId?: string) {
       addressLine2: payload.addressLine2,
       city: payload.city,
       postalCode: payload.postalCode,
-      notes: payload.notes,
+      notes: [payload.notes, `${MANUAL_PAYMENT_COPY} ${SHIPPING_COPY} Contacto admin: ${ADMIN_WHATSAPP_DISPLAY}.`]
+        .filter(Boolean)
+        .join("\n\n"),
       items: {
         create: orderItems,
       },

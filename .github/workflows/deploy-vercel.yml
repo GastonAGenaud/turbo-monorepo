@@ -1,0 +1,62 @@
+name: Deploy Vercel Apps
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "turbo.json"
+      - ".github/workflows/deploy-vercel.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  storefront:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_STOREFRONT }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Deploy storefront
+        run: |
+          pnpm dlx vercel pull --cwd . --yes --environment=production --token="$VERCEL_TOKEN"
+          pnpm dlx vercel build --cwd . --prod --token="$VERCEL_TOKEN"
+          pnpm dlx vercel deploy --cwd . --prebuilt --prod --token="$VERCEL_TOKEN"
+
+  admin:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_ADMIN }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Deploy admin
+        run: |
+          pnpm dlx vercel pull --cwd . --yes --environment=production --token="$VERCEL_TOKEN"
+          pnpm dlx vercel build --cwd . --prod --token="$VERCEL_TOKEN"
+          pnpm dlx vercel deploy --cwd . --prebuilt --prod --token="$VERCEL_TOKEN"

@@ -1,147 +1,129 @@
 # GGseeds Monorepo
 
-E-commerce completo para **GGseeds** (venta de semillas legales en CABA), orientado a bajo costo operativo y despliegue simple para una sola persona.
+E-commerce completo para **GGseeds** (venta de semillas legales en CABA), preparado para:
+
+- `storefront` y `admin` en Vercel
+- PostgreSQL barato en Neon/Supabase o local con Docker
+- imports/scraping en AWS ECS Fargate
+- despliegue de infra AWS desde GitHub con CloudFormation
+
+## Documentacion
+
+Documentacion operativa y de infraestructura:
+
+- [docs/README.md](/Users/gastongenaud/Documents/Github/GGseeds/docs/README.md)
+- [docs/manual-usuario.md](/Users/gastongenaud/Documents/Github/GGseeds/docs/manual-usuario.md)
+
+## Estado actual
+
+Implementado y probado en local:
+
+- catálogo, carrito, checkout, auth y perfil
+- admin con CRUD de productos/órdenes/imports
+- edición manual de `basePrice` y `markupPercent` desde admin con recálculo de `finalPrice`
+- import real desde MerlinGrow y Dutch Passion hacia PostgreSQL
+- CloudFormation validado por AWS CLI
+
+Pruebas locales realizadas:
+
+- import MerlinGrow: `created 3 / updated 0 / failed 0`
+- import Dutch Passion: `created 3 / updated 0 / failed 0`
+- edición de precio desde UI admin sobre producto importado:
+  - `basePrice: 18000`
+  - `markupPercent: 20`
+  - `finalPrice: 21600`
+
+## Arquitectura
+
+- `apps/storefront`: tienda pública Next.js
+- `apps/admin`: panel admin Next.js
+- `packages/db`: Prisma schema, migraciones, seed, client
+- `packages/scrapers`: ETL/scrapers MerlinGrow y Dutch Passion
+- `packages/shared`: tipos, validaciones, pricing, logger
+- `packages/ui`: componentes UI compartidos
+- `infra/cloudformation/ggseeds-stack.yaml`: infra principal AWS
+- `infra/cloudformation/ggseeds-github-oidc.yaml`: bootstrap OIDC para GitHub Actions
+
+### Modos de ejecución de imports
+
+- `inline`: corre el import en el mismo proceso del admin. Ideal para local/dev.
+- `ecs`: el admin en Vercel dispara una task en AWS ECS Fargate. Recomendado en producción.
 
 ## Stack
 
 - Monorepo: Turborepo + pnpm
-- Frontend: Next.js App Router + TypeScript estricto
-- UI: Tailwind + componentes reutilizables tipo shadcn (`@ggseeds/ui`)
-- Backend/API: Route Handlers en Next
-- DB: PostgreSQL (Docker local, Neon/Supabase en producción)
-- ORM: Prisma (schema + migración + seed)
-- Auth: NextAuth con credenciales
-- Scraping/ETL: Playwright + Cheerio
-- Jobs: endpoint cron protegido + `vercel.json` en `apps/admin`
-- Logs: pino + auditoría de `ImportRun`
-
-## Estructura
-
-```text
-apps/
-  storefront/   # Tienda pública (catálogo, carrito, checkout, perfil)
-  admin/        # Panel admin (productos, categorías, órdenes, importador)
-packages/
-  db/           # Prisma schema, migraciones, seed, client y upsert importado
-  scrapers/     # Adaptadores MerlinGrow / DutchPassion + runner ETL
-  shared/       # tipos, zod, pricing, rate-limit, logger
-  ui/           # componentes UI compartidos
-```
-
-## Funcionalidades implementadas
-
-### Storefront (`apps/storefront`)
-
-- Home con branding GGseeds (dark/light, neon accent, copy legal)
-- Catálogo con búsqueda, filtros (categoría/marca/disponibilidad) y orden
-- Detalle de producto con stock y precio final
-- Carrito persistente (`localStorage`) + sync server-side para usuario logueado
-- Checkout (crea `Order` en estado `PENDING`)
-- Registro/login
-- Perfil editable (nombre/teléfono/dirección)
-- Historial de órdenes
-
-### Admin (`apps/admin`)
-
-- Login y protección por rol `ADMIN`
-- Dashboard con métricas (órdenes pendientes, stock bajo, últimos imports)
-- CRUD de productos
-- Gestión de categorías
-- Gestión de órdenes y cambio de estado
-- Gestión básica de usuarios
-- Pantalla de importación manual por fuente o total
-- Historial de `ImportRun` y errores por item
-
-### ETL/Scraping (`packages/scrapers`)
-
-- Adaptadores:
-  - `MerlinGrowScraper`
-  - `DutchPassionScraper`
-- Respeto de `robots.txt` (best effort)
-- `User-Agent` identificable
-- Rate limit configurable + reintentos con backoff
-- Parseo robusto con selectores centralizados
-- Sanitización de descripciones
-- Upsert por `(source, externalId)`
-- Markup configurable (default 15%)
-- Precio final: `round(basePrice * (1 + markup/100), 2)`
-- Si stock no es detectable, se guarda `stock = null` + `stockStatus = UNKNOWN`
-
-## Cumplimiento scraping
-
-- Solo lectura de contenido público.
-- Sin acciones destructivas ni interacción autenticada.
-- Si `robots.txt` bloquea, el importador no fuerza acceso y continúa en modo best effort.
-- Si un sitio cambia HTML o bloquea scraping:
-  - fallback recomendado: carga manual desde admin,
-  - o integración API oficial del proveedor (si existe).
+- Frontend/API: Next.js App Router + TypeScript
+- UI: Tailwind + librería compartida `@ggseeds/ui`
+- DB: PostgreSQL + Prisma
+- Auth: NextAuth Credentials
+- Scraping: Cheerio + Playwright opcional en Docker worker
+- Logs: pino + auditoría `ImportRun`
+- AWS: CloudFormation + ECS Fargate + EventBridge + ECR + Secrets Manager + SSM
 
 ## Modelo de datos
 
-Incluye, entre otros:
+Incluye:
 
-- `User`, `Profile`, `Category`, `Product`, `ProductSourceMeta`
-- `Cart`, `CartItem`
+- `User`, `Profile`
+- `Category`, `Product`, `ProductSourceMeta`
 - `Order`, `OrderItem`
+- `Cart`, `CartItem`
 - `ImportRun`, `ImportRunItemError`
 - `Setting`
 
+No fue necesaria una nueva migración para esta iteración: el schema actual ya cubría importación, stock, pricing y admin editing.
+
 ## Levantar local
 
-### 1) Requisitos
+### Requisitos
 
-- Node 20+
+- Node 22+
 - pnpm 9+
 - Docker
 
-### 2) Variables
+### 1. Variables
 
 ```bash
 cp .env.example .env
 ```
 
-### 3) Base de datos local
+### 2. Base local
 
 ```bash
 docker compose up -d
-```
-
-### 4) Instalar y preparar Prisma
-
-```bash
 pnpm install
 pnpm db:generate
 pnpm --filter @ggseeds/db db:migrate:dev
 pnpm db:seed
 ```
 
-### 5) Ejecutar apps
+### 3. Apps
 
 Terminal 1:
+
 ```bash
 pnpm --filter @ggseeds/storefront dev
 ```
 
 Terminal 2:
+
 ```bash
 pnpm --filter @ggseeds/admin dev
 ```
 
+URLs:
+
 - Storefront: [http://localhost:3000](http://localhost:3000)
 - Admin: [http://localhost:3001](http://localhost:3001)
 
-## Usuario admin seed
+Admin seed:
 
-Se crea con:
+- Email: `admin@ggseeds.local`
+- Password: `Admin1234!`
 
-- `ADMIN_EMAIL` (default: `admin@ggseeds.local`)
-- `ADMIN_PASSWORD` (default: `Admin1234!`)
+## Imports locales
 
-Podés cambiar ambas en `.env` antes de correr `pnpm db:seed`.
-
-## Importación manual
-
-Desde scripts:
+Los scripts CLI ahora cargan `.env` automáticamente desde la raíz del repo.
 
 ```bash
 pnpm import:merlin
@@ -149,62 +131,282 @@ pnpm import:dutch
 pnpm import:all
 ```
 
-Desde UI admin:
-
-- `/imports` -> botones:
-  - Importar/Actualizar MerlinGrow
-  - Importar/Actualizar Dutch Passion
-  - Importar todo
-
-## Cron (Vercel)
-
-`apps/admin/vercel.json` configura un cron diario a `/api/cron/imports`.
-
-Endpoint protegido por token Bearer:
-
-- `IMPORT_CRON_TOKEN` o `CRON_SECRET`
-
-Ejemplo manual:
+Para pruebas cortas:
 
 ```bash
-curl -X POST https://tu-admin.vercel.app/api/cron/imports \
-  -H "Authorization: Bearer $IMPORT_CRON_TOKEN"
+SCRAPER_MAX_PRODUCTS=5 pnpm import:all
 ```
 
-## Deploy barato (recomendado)
+Comportamiento:
 
-### Opción recomendada
+- discovery por sitemap público
+- respeta `robots.txt`
+- user-agent identificable
+- reintentos con backoff
+- upsert por `(source, externalId)`
+- aplica markup por `MARKUP_PERCENT_DEFAULT` o `Setting.defaultMarkupPercent`
 
-- DB: Neon o Supabase Postgres
-- Frontend/API:
-  - Proyecto Vercel 1: `apps/storefront`
-  - Proyecto Vercel 2: `apps/admin`
+## Admin: edición de precios
 
-### Pasos
+El formulario de producto permite editar:
 
-1. Crear DB Postgres en Neon/Supabase.
-2. Cargar `DATABASE_URL` en ambos proyectos Vercel.
-3. Configurar envs en ambos proyectos:
-   - `DATABASE_URL`
-   - `NEXTAUTH_SECRET`
-   - `MARKUP_PERCENT_DEFAULT`
-   - `IMPORT_CRON_TOKEN` / `CRON_SECRET`
-4. En build/deploy, ejecutar migraciones:
-   - `pnpm --filter @ggseeds/db db:migrate`
-5. Seed inicial (una vez):
-   - `pnpm db:seed`
-6. Deploy storefront y admin desde monorepo (Root Directory por app).
-7. Verificar cron en proyecto admin.
+- `basePrice`
+- `markupPercent`
+- `stock`
+- `stockStatus`
+- `source`
 
-## Calidad y seguridad
+La UI muestra preview de `finalPrice` y el backend recalcula:
 
-- TypeScript estricto
-- Validación de inputs con Zod
-- Tests unitarios para pricing y utils de scrapers
-- Smoke tests de endpoints health
-- Headers de seguridad en middleware
-- Rate limit básico en endpoints sensibles (registro/cron)
-- Auth + control de rol en admin y APIs admin
+```txt
+finalPrice = round(basePrice * (1 + markupPercent / 100), 2)
+```
+
+## Infra AWS
+
+La infraestructura está pensada para este modelo:
+
+- Vercel: `storefront` + `admin`
+- AWS: worker de imports en ECS Fargate
+- DB: Neon/Supabase recomendado
+
+### Archivo principal
+
+`infra/cloudformation/ggseeds-stack.yaml`
+
+Provisiona:
+
+- S3 bucket de assets
+- Secrets Manager para `DATABASE_URL` y cron secret
+- SSM parameter para markup
+- CloudWatch log group para imports
+- ECR repository para el worker
+- ECS cluster + task definition
+- EventBridge rule diaria para correr imports
+- IAM user y credenciales limitadas para que el admin en Vercel pueda lanzar imports en ECS
+
+### Bootstrap GitHub OIDC
+
+Primera vez, una sola vez por cuenta AWS:
+
+```bash
+aws cloudformation deploy \
+  --stack-name ggseeds-github-oidc \
+  --template-file infra/cloudformation/ggseeds-github-oidc.yaml \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --parameter-overrides \
+    GitHubOwner=TU_USUARIO_O_ORG \
+    GitHubRepository=GGseeds \
+    GitHubBranch=main
+```
+
+Guardá el output `GitHubDeployRoleArn` como secret de GitHub:
+
+- `AWS_GITHUB_DEPLOY_ROLE_ARN`
+
+### Deploy AWS desde GitHub
+
+Workflow:
+
+- `.github/workflows/deploy-aws-infra.yml`
+
+Secrets requeridos en GitHub:
+
+- `AWS_GITHUB_DEPLOY_ROLE_ARN`
+- `AWS_DATABASE_URL`
+- `IMPORT_CRON_TOKEN`
+
+Variables recomendadas en GitHub:
+
+- `AWS_REGION`
+- `AWS_STACK_NAME`
+- `AWS_ENVIRONMENT`
+- `AWS_VPC_ID`
+- `AWS_ECS_SUBNET_IDS`
+- `SCRAPER_SCHEDULE_EXPRESSION`
+- `MARKUP_PERCENT_DEFAULT`
+
+Qué hace el workflow:
+
+1. asume rol por OIDC
+2. valida el template
+3. despliega/actualiza CloudFormation
+4. resuelve el output del ECR repo
+5. build + push de `Dockerfile.scraper`
+
+## Deploy en Vercel
+
+Workflow:
+
+- `.github/workflows/deploy-vercel.yml`
+
+Secrets requeridos en GitHub:
+
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID_STOREFRONT`
+- `VERCEL_PROJECT_ID_ADMIN`
+
+### Proyectos Vercel
+
+- proyecto 1: `apps/storefront`
+- proyecto 2: `apps/admin`
+
+### Variables para `storefront`
+
+- `DATABASE_URL`
+- `NEXTAUTH_SECRET`
+- `NEXTAUTH_URL`
+- `NEXT_PUBLIC_APP_URL`
+- `MARKUP_PERCENT_DEFAULT`
+
+### Variables para `admin`
+
+- `DATABASE_URL`
+- `NEXTAUTH_SECRET`
+- `ADMIN_NEXTAUTH_URL`
+- `ADMIN_APP_URL`
+- `MARKUP_PERCENT_DEFAULT`
+- `SCRAPER_CONCURRENCY`
+- `SCRAPER_DELAY_MS`
+- `SCRAPER_MAX_RETRIES`
+- `SCRAPER_TIMEOUT_MS`
+- `IMPORT_CRON_TOKEN`
+- `IMPORT_EXECUTION_MODE=ecs`
+- `AWS_REGION`
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_ECS_CLUSTER_ARN`
+- `AWS_ECS_TASK_DEFINITION_ARN`
+- `AWS_ECS_CONTAINER_NAME`
+- `AWS_ECS_SUBNET_IDS`
+- `AWS_ECS_SECURITY_GROUP_IDS`
+
+### De dónde sale cada variable AWS
+
+Desde outputs del stack `ggseeds-stack`:
+
+- `ScraperClusterArn` -> `AWS_ECS_CLUSTER_ARN`
+- `ScraperTaskDefinitionArn` -> `AWS_ECS_TASK_DEFINITION_ARN`
+- `ScraperContainerName` -> `AWS_ECS_CONTAINER_NAME`
+- `ScraperSubnetIds` -> `AWS_ECS_SUBNET_IDS`
+- `ScraperSecurityGroupId` -> `AWS_ECS_SECURITY_GROUP_IDS`
+
+Desde el secret de AWS generado por CloudFormation:
+
+- `AdminImportCredentialsSecretArn`
+  - contiene `AWS_ACCESS_KEY_ID`
+  - contiene `AWS_SECRET_ACCESS_KEY`
+
+### Sincronización automática a Vercel
+
+Scripts:
+
+- [render-admin-env.sh](/Users/gastongenaud/Documents/Github/GGseeds/scripts/aws/render-admin-env.sh)
+- [render-storefront-env.sh](/Users/gastongenaud/Documents/Github/GGseeds/scripts/aws/render-storefront-env.sh)
+- [sync-admin-env.sh](/Users/gastongenaud/Documents/Github/GGseeds/scripts/vercel/sync-admin-env.sh)
+- [sync-storefront-env.sh](/Users/gastongenaud/Documents/Github/GGseeds/scripts/vercel/sync-storefront-env.sh)
+
+Renderizar variables del admin desde AWS:
+
+```bash
+STACK_NAME=ggseeds-prod AWS_REGION=us-east-1 pnpm aws:render:admin-env
+```
+
+Subir variables AWS-derived directamente a Vercel admin:
+
+```bash
+export VERCEL_TOKEN=...
+export VERCEL_ORG_ID=...
+export VERCEL_PROJECT_ID_ADMIN=...
+export STACK_NAME=ggseeds-prod
+export AWS_REGION=us-east-1
+
+pnpm vercel:sync:admin-env
+```
+
+Subir las variables AWS-derived del storefront:
+
+```bash
+export VERCEL_TOKEN=...
+export VERCEL_ORG_ID=...
+export VERCEL_PROJECT_ID_STOREFRONT=...
+export STACK_NAME=ggseeds-prod
+export AWS_REGION=us-east-1
+
+pnpm vercel:sync:storefront-env
+```
+
+Esto sincroniza:
+
+- `DATABASE_URL`
+- `IMPORT_CRON_TOKEN`
+- `MARKUP_PERCENT_DEFAULT`
+- `IMPORT_EXECUTION_MODE`
+- `AWS_REGION`
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_ECS_CLUSTER_ARN`
+- `AWS_ECS_TASK_DEFINITION_ARN`
+- `AWS_ECS_CONTAINER_NAME`
+- `AWS_ECS_SUBNET_IDS`
+- `AWS_ECS_SECURITY_GROUP_IDS`
+
+Para storefront sincroniza:
+
+- `DATABASE_URL`
+- `MARKUP_PERCENT_DEFAULT`
+
+## LocalStack
+
+Se agregó soporte de stack en modo local:
+
+- `DeploymentMode=local`
+- omite ECS/ECR/EventBridge
+- crea recursos compatibles con LocalStack
+
+Archivos:
+
+- `docker-compose.localstack.yml`
+- `scripts/localstack/deploy-cloudformation.sh`
+
+Comandos:
+
+```bash
+pnpm infra:local:up
+pnpm infra:local:deploy
+pnpm infra:local:down
+```
+
+El script:
+
+1. valida el template
+2. despliega CloudFormation contra `http://localhost:4566`
+3. lista outputs del stack
+4. verifica el bucket S3 creado
+
+Nota realista:
+
+- en esta máquina, `aws cloudformation validate-template` pasó
+- el pull de la imagen `localstack/localstack:3.4` quedó bloqueado por Docker sin devolver progreso, así que el template y el script están listos pero la prueba de deploy completo depende de que Docker termine de descargar esa imagen
+
+## Docker worker
+
+Archivo:
+
+- `Dockerfile.scraper`
+
+Construcción local:
+
+```bash
+pnpm docker:scraper:build
+```
+
+El worker:
+
+- usa imagen base de Playwright
+- instala dependencias del monorepo
+- ejecuta `pnpm import:all`
 
 ## Scripts útiles
 
@@ -217,8 +419,35 @@ pnpm db:generate
 pnpm db:migrate
 pnpm db:seed
 pnpm import:all
+pnpm infra:validate
+pnpm infra:local:up
+pnpm infra:local:deploy
+pnpm infra:local:down
 ```
 
-## Nota de pagos
+## Seguridad y operación
 
-MercadoPago no está bloqueando el flujo principal: checkout funcional en modo pedido pendiente (`PENDING`). Integración real puede agregarse como módulo opcional sin romper el core.
+- validación con Zod
+- auth + rol `ADMIN`
+- rate limit en endpoints sensibles
+- logs estructurados con pino
+- imports auditables en `ImportRun`
+- scraper en modo best effort si cambia el HTML o hay bloqueo parcial
+
+## Qué quedó funcional
+
+- imports MerlinGrow y Dutch Passion con data real
+- cálculo de markup y precio final persistido
+- admin editando precios de productos importados
+- dispatcher de imports local `inline`
+- dispatcher de imports productivo `ecs`
+- template principal AWS validado
+- workflows de GitHub para AWS y Vercel
+
+## Siguientes pasos recomendados
+
+1. crear el stack bootstrap OIDC en AWS
+2. configurar secrets/vars en GitHub
+3. correr `deploy-aws-infra.yml`
+4. copiar outputs/secrets del stack a Vercel envs
+5. correr `deploy-vercel.yml`

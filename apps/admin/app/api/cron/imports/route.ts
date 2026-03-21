@@ -1,13 +1,31 @@
 import { NextResponse } from "next/server";
 
-import { runAllImports } from "@ggseeds/scrapers";
 import { checkRateLimit } from "@ggseeds/shared";
 
-async function handleCron(request: Request) {
-  const auth = request.headers.get("authorization")?.replace("Bearer ", "");
-  const allowedToken = process.env.IMPORT_CRON_TOKEN ?? process.env.CRON_SECRET;
+import { executeImport } from "../../../../lib/import-execution";
 
-  if (!auth || !allowedToken || auth !== allowedToken) {
+function isAuthorized(request: Request): boolean {
+  // Vercel cron: verificar header oficial (más seguro que Bearer token solo)
+  const vercelCronSecret = process.env.CRON_SECRET;
+  const vercelAuthHeader = request.headers.get("authorization")?.replace("Bearer ", "");
+
+  if (vercelCronSecret && vercelAuthHeader === vercelCronSecret) {
+    return true;
+  }
+
+  // Fallback: token propio para entornos fuera de Vercel
+  const importToken = process.env.IMPORT_CRON_TOKEN;
+  const authHeader = request.headers.get("authorization")?.replace("Bearer ", "");
+
+  if (importToken && authHeader === importToken) {
+    return true;
+  }
+
+  return false;
+}
+
+async function handleCron(request: Request) {
+  if (!isAuthorized(request)) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
@@ -16,7 +34,7 @@ async function handleCron(request: Request) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
-  const result = await runAllImports();
+  const result = await executeImport("ALL", "IMPORT");
   return NextResponse.json({ ok: true, result });
 }
 

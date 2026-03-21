@@ -7,8 +7,15 @@ const prisma = new PrismaClient();
 
 async function main() {
   const markupPercent = Number(process.env.MARKUP_PERCENT_DEFAULT ?? 15);
-  const adminEmail = process.env.ADMIN_EMAIL ?? "admin@ggseeds.local";
-  const adminPassword = process.env.ADMIN_PASSWORD ?? "Admin1234!";
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (!adminEmail || !adminPassword) {
+    throw new Error(
+      "ADMIN_EMAIL y ADMIN_PASSWORD son obligatorios. " +
+      "Configuralos en variables de entorno antes de ejecutar el seed.",
+    );
+  }
 
   await prisma.setting.upsert({
     where: { key: "defaultMarkupPercent" },
@@ -16,10 +23,20 @@ async function main() {
     create: { key: "defaultMarkupPercent", value: String(markupPercent) },
   });
 
-  const hash = await bcrypt.hash(adminPassword, 10);
+  const hash = await bcrypt.hash(adminPassword, 12);
+
   const admin = await prisma.user.upsert({
     where: { email: adminEmail },
-    update: { role: Role.ADMIN, passwordHash: hash },
+    update: {
+      role: Role.ADMIN,
+      passwordHash: hash,
+      profile: {
+        upsert: {
+          update: { name: "Administrador GGseeds" },
+          create: { name: "Administrador GGseeds" },
+        },
+      },
+    },
     create: {
       email: adminEmail,
       passwordHash: hash,

@@ -28,7 +28,7 @@ export default async function UsersPage() {
           <CardTitle>Clientes y roles</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          {users.map((user) => (
+          {users.map((user: any) => (
             <div key={user.id} className="rounded border border-[var(--line)] p-3 text-sm">
               <p className="font-medium">
                 {user.email} · {user.role}

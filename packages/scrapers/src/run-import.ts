@@ -1,19 +1,22 @@
 import pLimit from "p-limit";
 
-import { db, ImportRunStatus, ProductSource, upsertImportedProduct } from "@ggseeds/db";
+import { db, upsertImportedProduct } from "@ggseeds/db";
 import { logger } from "@ggseeds/shared";
+import type { ProductSource } from "@ggseeds/shared";
 
 import { scraperConfig } from "./config";
 import { scrapeDutchPassion } from "./adapters/dutchpassion";
 import { scrapeMerlinGrow } from "./adapters/merlingrow";
 
-export async function runImport(source: ProductSource) {
+export type ImportableSource = Exclude<ProductSource, "MANUAL">;
+
+export async function runImport(source: ImportableSource) {
   const start = Date.now();
 
   const run = await db.importRun.create({
     data: {
-      source,
-      status: ImportRunStatus.SUCCESS,
+      source: source as any,
+      status: "SUCCESS" as any,
       logs: {
         startedAt: new Date().toISOString(),
       },
@@ -32,9 +35,9 @@ export async function runImport(source: ProductSource) {
 
   try {
     const items =
-      source === ProductSource.MERLINGROW
+      source === "MERLINGROW"
         ? await scrapeMerlinGrow()
-        : source === ProductSource.DUTCHPASSION
+        : source === "DUTCHPASSION"
           ? await scrapeDutchPassion()
           : [];
 
@@ -61,7 +64,7 @@ export async function runImport(source: ProductSource) {
 
     const finishedAt = new Date();
     const durationMs = Date.now() - start;
-    const status = failures.length === 0 ? ImportRunStatus.SUCCESS : ImportRunStatus.PARTIAL_SUCCESS;
+    const status = failures.length === 0 ? "SUCCESS" : "PARTIAL_SUCCESS";
 
     await db.importRun.update({
       where: { id: run.id },
@@ -100,7 +103,7 @@ export async function runImport(source: ProductSource) {
       data: {
         finishedAt: new Date(),
         durationMs,
-        status: ImportRunStatus.FAILED,
+        status: "FAILED" as any,
         failed: failures.length + 1,
         logs: {
           error: message,
@@ -114,7 +117,7 @@ export async function runImport(source: ProductSource) {
 }
 
 export async function runAllImports() {
-  const merlin = await runImport(ProductSource.MERLINGROW);
-  const dutch = await runImport(ProductSource.DUTCHPASSION);
+  const merlin = await runImport("MERLINGROW");
+  const dutch = await runImport("DUTCHPASSION");
   return { merlin, dutch };
 }

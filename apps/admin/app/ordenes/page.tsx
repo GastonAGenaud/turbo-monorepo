@@ -27,7 +27,7 @@ export default async function OrdersPage() {
           <CardTitle>Gestión de estados</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {orders.map((order) => (
+          {orders.map((order: any) => (
             <div key={order.id} className="rounded border border-[var(--line)] p-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="font-medium">
@@ -36,13 +36,18 @@ export default async function OrdersPage() {
                 <OrderStatusSelect orderId={order.id} status={order.status} />
               </div>
               <p className="text-xs text-[color:var(--muted)]">Cliente: {order.user?.email ?? order.email}</p>
+              <p className="text-xs text-[color:var(--muted)]">Teléfono: {order.phone ?? "sin informar"}</p>
+              <p className="text-xs text-[color:var(--muted)]">
+                Envío: {order.addressLine1}, {order.city} ({order.postalCode})
+              </p>
               <ul className="mt-2 space-y-1 text-sm text-[color:var(--muted)]">
-                {order.items.map((item) => (
+                {order.items.map((item: any) => (
                   <li key={item.id}>
                     {item.quantity} x {item.productName}
                   </li>
                 ))}
               </ul>
+              {order.notes ? <p className="mt-2 whitespace-pre-wrap text-xs text-[color:var(--muted)]">{order.notes}</p> : null}
             </div>
           ))}
         </CardContent>

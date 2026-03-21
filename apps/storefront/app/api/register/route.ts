@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { db } from "@ggseeds/db";
 import { checkRateLimit, registerSchema } from "@ggseeds/shared";
+import { verifyCaptchaChallenge } from "../../../lib/captcha";
 
 export async function POST(request: Request) {
   const ip = request.headers.get("x-forwarded-for") ?? "local";
@@ -13,6 +14,14 @@ export async function POST(request: Request) {
   try {
     const payload = registerSchema.parse(await request.json());
     const email = payload.email.toLowerCase();
+
+    if (payload.website?.trim()) {
+      return NextResponse.json({ error: "No se pudo validar el registro" }, { status: 400 });
+    }
+
+    if (!verifyCaptchaChallenge(payload.captchaToken, payload.captchaAnswer)) {
+      return NextResponse.json({ error: "Captcha inválido o vencido" }, { status: 400 });
+    }
 
     const existing = await db.user.findUnique({ where: { email } });
     if (existing) {

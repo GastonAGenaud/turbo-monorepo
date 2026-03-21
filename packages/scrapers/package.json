@@ -9,12 +9,14 @@
     "build": "tsc -p tsconfig.json --noEmit",
     "lint": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "import": "tsx src/cli.ts"
+    "import": "tsx src/cli.ts",
+    "refresh-images": "tsx src/refresh-images-cli.ts"
   },
   "dependencies": {
     "@ggseeds/db": "workspace:*",
     "@ggseeds/shared": "workspace:*",
     "cheerio": "1.0.0",
+    "dotenv": "16.4.7",
     "p-limit": "6.2.0",
     "p-retry": "6.2.1",
     "playwright": "1.50.1",

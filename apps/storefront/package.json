@@ -15,7 +15,8 @@
     "@ggseeds/shared": "workspace:*",
     "@ggseeds/ui": "workspace:*",
     "bcryptjs": "3.0.2",
-    "next": "15.2.0",
+    "lucide-react": "0.479.0",
+    "next": "15.5.14",
     "next-auth": "4.24.11",
     "react": "19.0.0",
     "react-dom": "19.0.0",
@@ -33,6 +34,6 @@
     "typescript": "5.8.2",
     "vitest": "3.0.8",
     "eslint": "9.21.0",
-    "eslint-config-next": "15.2.0"
+    "eslint-config-next": "15.5.14"
   }
 }

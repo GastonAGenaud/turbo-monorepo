@@ -41,7 +41,7 @@ export default async function ProductEditPage({ params }: { params: Promise<{ id
         </CardHeader>
         <CardContent>
           <ProductForm
-            categories={categories.map((cat) => ({ id: cat.id, name: cat.name }))}
+            categories={categories.map((cat: any) => ({ id: cat.id, name: cat.name }))}
             product={{
               id: product.id,
               sku: product.sku,

@@ -1,6 +1,19 @@
-import { ProductSource } from "@ggseeds/db";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { config } from "dotenv";
+import type { ProductSource } from "@ggseeds/shared";
+
+const currentDir = dirname(fileURLToPath(import.meta.url));
+config({ path: resolve(currentDir, "../../../.env") });
+config();
 
 import { runAllImports, runImport } from "./run-import";
+
+const SOURCES = {
+  MERLINGROW: "MERLINGROW",
+  DUTCHPASSION: "DUTCHPASSION",
+} as const satisfies Record<Exclude<ProductSource, "MANUAL">, Exclude<ProductSource, "MANUAL">>;
 
 async function main() {
   const target = process.argv[2] ?? "all";
@@ -12,13 +25,13 @@ async function main() {
   }
 
   if (target === "merlin") {
-    const result = await runImport(ProductSource.MERLINGROW);
+    const result = await runImport(SOURCES.MERLINGROW);
     console.log(result);
     return;
   }
 
   if (target === "dutch") {
-    const result = await runImport(ProductSource.DUTCHPASSION);
+    const result = await runImport(SOURCES.DUTCHPASSION);
     console.log(result);
     return;
   }

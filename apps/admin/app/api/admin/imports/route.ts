@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 
 import { db } from "@ggseeds/db";
-import { runAllImports, runImport } from "@ggseeds/scrapers";
 
+import { writeAuditLog } from "../../../../lib/audit";
 import { ensureAdminApi } from "../../../../lib/guard";
+import { executeImport } from "../../../../lib/import-execution";
 import { importRunSchema } from "../../../../lib/schemas";
 
-export async function GET() {
-  const guard = await ensureAdminApi();
+export async function GET(request: Request) {
+  const guard = await ensureAdminApi(request);
   if (!guard.ok) {
     return guard.response;
   }
@@ -24,7 +25,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const guard = await ensureAdminApi();
+  const guard = await ensureAdminApi(request);
   if (!guard.ok) {
     return guard.response;
   }
@@ -32,13 +33,16 @@ export async function POST(request: Request) {
   try {
     const payload = importRunSchema.parse(await request.json());
 
-    if (payload.source === "ALL") {
-      const result = await runAllImports();
-      return NextResponse.json({ ok: true, result });
-    }
+    await writeAuditLog({
+      userId: guard.userId,
+      action: "IMPORT_TRIGGER",
+      entity: "ImportRun",
+      metadata: { source: payload.source, action: payload.action },
+      ipAddress: guard.ip,
+    });
 
-    const result = await runImport(payload.source);
-    return NextResponse.json({ ok: true, result });
+    const result = await executeImport(payload.source, payload.action);
+    return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "No se pudo ejecutar import" },

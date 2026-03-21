@@ -45,6 +45,52 @@ export function normalizeDescription(html: string | null | undefined): string {
   return plainTextFromHtml(html);
 }
 
+export function normalizeImageUrl(raw: string | null | undefined, pageUrl?: string): string | null {
+  const candidate = raw?.trim();
+  if (!candidate || candidate.startsWith("data:")) {
+    return null;
+  }
+
+  const absoluteCandidate = candidate.startsWith("//") ? `https:${candidate}` : candidate;
+
+  try {
+    const normalized = pageUrl ? new URL(absoluteCandidate, pageUrl) : new URL(absoluteCandidate);
+    normalized.hash = "";
+    return normalized.toString();
+  } catch {
+    return null;
+  }
+}
+
+export function mergeImageCandidates(primary: string[], fallback: string[] = [], pageUrl?: string): string[] {
+  const images: string[] = [];
+  const fingerprints = new Set<string>();
+
+  for (const raw of [...primary, ...fallback]) {
+    const normalized = normalizeImageUrl(raw, pageUrl);
+    if (!normalized) {
+      continue;
+    }
+
+    const fingerprint = normalized
+      .replace(/([?&])(width|height|w|h|fit|format|quality|q)=[^&]+/gi, "")
+      .replace(/[?&]$/, "");
+
+    if (fingerprints.has(fingerprint)) {
+      continue;
+    }
+
+    fingerprints.add(fingerprint);
+    images.push(normalized);
+
+    if (images.length >= 5) {
+      break;
+    }
+  }
+
+  return images;
+}
+
 export function toExternalId(url: string): string {
   try {
     const parsed = new URL(url);

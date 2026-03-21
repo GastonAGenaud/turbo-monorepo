@@ -50,7 +50,7 @@ export default async function ProfilePage() {
           <CardTitle>Últimos pedidos</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {orders.map((order) => (
+          {orders.map((order: any) => (
             <div key={order.id} className="rounded border border-[var(--line)] p-3 text-sm">
               <p>#{order.id.slice(0, 8)} - {order.status}</p>
               <p className="text-[color:var(--muted)]">${Number(order.total).toLocaleString("es-AR")}</p>

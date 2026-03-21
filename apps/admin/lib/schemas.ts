@@ -11,5 +11,6 @@ export const orderStatusSchema = z.object({
 });
 
 export const importRunSchema = z.object({
+  action: z.enum(["IMPORT", "REFRESH_IMAGES"]).default("IMPORT"),
   source: z.enum(["MERLINGROW", "DUTCHPASSION", "ALL"]),
 });

@@ -1,4 +1,3 @@
-import { Prisma } from "@ggseeds/db";
 import { db } from "@ggseeds/db";
 
 interface CatalogFilters {
@@ -34,7 +33,7 @@ export async function getHomeData() {
 }
 
 export async function getCatalog(filters: CatalogFilters) {
-  const where: Prisma.ProductWhereInput = {
+  const where: any = {
     isActive: true,
     AND: [
       filters.query
@@ -69,7 +68,7 @@ export async function getCatalog(filters: CatalogFilters) {
     ],
   };
 
-  const orderBy: Prisma.ProductOrderByWithRelationInput =
+  const orderBy: any =
     filters.sort === "price_asc"
       ? { finalPrice: "asc" }
       : filters.sort === "price_desc"
@@ -96,7 +95,7 @@ export async function getCatalog(filters: CatalogFilters) {
   return {
     items,
     categories,
-    brands: brands.map((item) => item.brand).filter(Boolean) as string[],
+    brands: brands.map((item: any) => item.brand).filter(Boolean) as string[],
   };
 }
 

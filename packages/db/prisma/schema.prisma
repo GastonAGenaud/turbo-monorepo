@@ -39,17 +39,21 @@ enum ImportRunStatus {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  passwordHash  String?
-  role          Role      @default(CUSTOMER)
-  emailVerified DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                String    @id @default(cuid())
+  email             String    @unique
+  passwordHash      String?
+  role              Role      @default(CUSTOMER)
+  emailVerified     DateTime?
+  failedLoginCount  Int       @default(0)
+  lockedUntil       DateTime?
+  lastLoginAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
-  profile Profile?
-  orders  Order[]
-  cart    Cart?
+  profile    Profile?
+  orders     Order[]
+  cart       Cart?
+  auditLogs  AuditLog[]
 
   accounts Account[]
   sessions Session[]
@@ -75,6 +79,7 @@ model Category {
   name        String
   slug        String    @unique
   description String?
+  deletedAt   DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -82,23 +87,26 @@ model Category {
 }
 
 model Product {
-  id            String        @id @default(cuid())
-  sku           String        @unique
-  slug          String        @unique
-  name          String
-  brand         String?
-  description   String?
-  images        String[]
-  basePrice     Decimal       @db.Decimal(10, 2)
-  markupPercent Decimal       @default(15) @db.Decimal(5, 2)
-  finalPrice    Decimal       @db.Decimal(10, 2)
-  stock         Int?
-  stockStatus   StockStatus   @default(UNKNOWN)
-  tags          String[]
-  isActive      Boolean       @default(true)
-  source        ProductSource @default(MANUAL)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  id              String        @id @default(cuid())
+  sku             String        @unique
+  slug            String        @unique
+  name            String
+  brand           String?
+  description     String?
+  longDescription String?
+  attributes      Json?
+  images          String[]
+  basePrice       Decimal       @db.Decimal(10, 2)
+  markupPercent   Decimal       @default(15) @db.Decimal(5, 2)
+  finalPrice      Decimal       @db.Decimal(10, 2)
+  stock           Int?
+  stockStatus     StockStatus   @default(UNKNOWN)
+  tags            String[]
+  isActive        Boolean       @default(true)
+  source          ProductSource @default(MANUAL)
+  deletedAt       DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   categoryId String?
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
@@ -243,6 +251,23 @@ model Session {
   expires      DateTime
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  action     String
+  entity     String
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([entity, entityId])
+  @@index([createdAt])
 }
 
 model VerificationToken {

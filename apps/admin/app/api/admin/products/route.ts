@@ -3,21 +3,23 @@ import { NextResponse } from "next/server";
 import { db } from "@ggseeds/db";
 import { applyMarkup, productMutationSchema } from "@ggseeds/shared";
 
+import { writeAuditLog, extractIp } from "../../../../lib/audit";
 import { ensureAdminApi } from "../../../../lib/guard";
 
-export async function GET() {
-  const guard = await ensureAdminApi();
+export async function GET(request: Request) {
+  const guard = await ensureAdminApi(request);
   if (!guard.ok) {
     return guard.response;
   }
 
   const products = await db.product.findMany({
+    where: { deletedAt: null },
     include: { category: true, sourceMeta: true },
     orderBy: { createdAt: "desc" },
   });
 
   return NextResponse.json({
-    items: products.map((product) => ({
+    items: products.map((product: any) => ({
       ...product,
       basePrice: Number(product.basePrice),
       finalPrice: Number(product.finalPrice),
@@ -27,7 +29,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const guard = await ensureAdminApi();
+  const guard = await ensureAdminApi(request);
   if (!guard.ok) {
     return guard.response;
   }
@@ -53,6 +55,15 @@ export async function POST(request: Request) {
         isActive: payload.isActive,
         source: payload.source,
       },
+    });
+
+    await writeAuditLog({
+      userId: guard.userId,
+      action: "CREATE",
+      entity: "Product",
+      entityId: product.id,
+      metadata: { name: payload.name, sku: payload.sku },
+      ipAddress: guard.ip,
     });
 
     return NextResponse.json({ ok: true, productId: product.id });

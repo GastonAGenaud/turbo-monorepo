@@ -1,16 +1,19 @@
-import DOMPurify from "isomorphic-dompurify";
-
 export function sanitizeHtml(html: string | null | undefined): string {
   if (!html) {
     return "";
   }
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS: ["p", "strong", "em", "ul", "ol", "li", "br"],
-    ALLOWED_ATTR: [],
-  });
+
+  const withoutScripts = html
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?>[\s\S]*?<\/style>/gi, " ");
+
+  return withoutScripts
+    .replace(/<\/?(p|br|li|ul|ol|strong|em)\b[^>]*>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function plainTextFromHtml(html: string | null | undefined): string {
-  const safe = sanitizeHtml(html);
-  return safe.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  return sanitizeHtml(html);
 }

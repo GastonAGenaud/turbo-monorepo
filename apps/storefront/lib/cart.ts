@@ -11,7 +11,7 @@ export async function syncCart(userId: string, items: Array<{ productId: string;
 
   if (items.length > 0) {
     await db.cartItem.createMany({
-      data: items.map((item) => ({
+      data: items.map((item: any) => ({
         cartId: cart.id,
         productId: item.productId,
         quantity: item.quantity,

@@ -18,7 +18,7 @@ export default async function NewProductPage() {
           <CardTitle>Crear manual</CardTitle>
         </CardHeader>
         <CardContent>
-          <ProductForm categories={categories.map((cat) => ({ id: cat.id, name: cat.name }))} />
+          <ProductForm categories={categories.map((cat: any) => ({ id: cat.id, name: cat.name }))} />
         </CardContent>
       </Card>
     </div>

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { applyMarkup } from "@ggseeds/shared";
 import { Button, Input, Label, Textarea } from "@ggseeds/ui";
 
 interface ProductFormProps {
@@ -30,8 +31,11 @@ export function ProductForm({ categories, product }: ProductFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [basePrice, setBasePrice] = useState(product?.basePrice ?? 0);
+  const [markupPercent, setMarkupPercent] = useState(product?.markupPercent ?? 15);
 
   const isEdit = Boolean(product?.id);
+  const finalPricePreview = useMemo(() => applyMarkup(basePrice || 0, markupPercent || 0), [basePrice, markupPercent]);
 
   return (
     <form
@@ -100,7 +104,14 @@ export function ProductForm({ categories, product }: ProductFormProps) {
         </div>
         <div>
           <Label htmlFor="basePrice">Precio base</Label>
-          <Input id="basePrice" name="basePrice" type="number" defaultValue={product?.basePrice ?? 0} required />
+          <Input
+            id="basePrice"
+            name="basePrice"
+            type="number"
+            defaultValue={product?.basePrice ?? 0}
+            onChange={(event) => setBasePrice(Number(event.target.value))}
+            required
+          />
         </div>
         <div>
           <Label htmlFor="markupPercent">Markup %</Label>
@@ -109,6 +120,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
             name="markupPercent"
             type="number"
             defaultValue={product?.markupPercent ?? 15}
+            onChange={(event) => setMarkupPercent(Number(event.target.value))}
             required
           />
         </div>
@@ -163,6 +175,22 @@ export function ProductForm({ categories, product }: ProductFormProps) {
       <div>
         <Label htmlFor="description">Descripción</Label>
         <Textarea id="description" name="description" defaultValue={product?.description ?? ""} />
+      </div>
+
+      <div className="rounded-xl border border-[var(--line)] bg-[color:var(--panel)] p-4 text-sm">
+        <p className="font-medium text-[color:var(--foreground)]">
+          Precio final estimado: ${finalPricePreview.toLocaleString("es-AR")}
+        </p>
+        {product?.source && product.source !== "MANUAL" ? (
+          <p className="mt-1 text-[color:var(--muted)]">
+            Producto importado desde {product.source}. Podés ajustar el precio manualmente; un reimport posterior volverá a
+            recalcular `basePrice` y `finalPrice` con el markup configurado.
+          </p>
+        ) : (
+          <p className="mt-1 text-[color:var(--muted)]">
+            Este preview usa `basePrice x (1 + markupPercent/100)` con redondeo a 2 decimales.
+          </p>
+        )}
       </div>
 
       <label className="flex items-center gap-2">

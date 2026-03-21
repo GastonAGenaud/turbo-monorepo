@@ -11,8 +11,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "dompurify": "3.2.4",
-    "isomorphic-dompurify": "2.21.0",
     "pino": "9.6.0",
     "zod": "3.24.2"
   },

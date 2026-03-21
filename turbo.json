@@ -1,5 +1,29 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "ADMIN_APP_URL",
+    "ADMIN_NEXTAUTH_URL",
+    "AWS_ACCESS_KEY_ID",
+    "AWS_ECS_CLUSTER_ARN",
+    "AWS_ECS_CONTAINER_NAME",
+    "AWS_ECS_SECURITY_GROUP_IDS",
+    "AWS_ECS_SUBNET_IDS",
+    "AWS_ECS_TASK_DEFINITION_ARN",
+    "AWS_REGION",
+    "AWS_SECRET_ACCESS_KEY",
+    "CRON_SECRET",
+    "DATABASE_URL",
+    "IMPORT_CRON_TOKEN",
+    "IMPORT_EXECUTION_MODE",
+    "LOG_LEVEL",
+    "MARKUP_PERCENT_DEFAULT",
+    "NEXTAUTH_SECRET",
+    "NEXTAUTH_URL",
+    "SCRAPER_CONCURRENCY",
+    "SCRAPER_DELAY_MS",
+    "SCRAPER_MAX_RETRIES",
+    "SCRAPER_TIMEOUT_MS"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

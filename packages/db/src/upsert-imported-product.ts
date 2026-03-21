@@ -1,5 +1,4 @@
-import { ProductSource } from "@prisma/client";
-
+import { Prisma } from "@prisma/client";
 import { db } from "./client";
 import { applyMarkup } from "@ggseeds/shared";
 import type { ImportedProduct } from "@ggseeds/shared";
@@ -38,7 +37,7 @@ export async function upsertImportedProduct(
   const existingMeta = await db.productSourceMeta.findUnique({
     where: {
       source_externalId: {
-        source: imported.source as ProductSource,
+        source: imported.source as any,
         externalId: imported.externalId,
       },
     },
@@ -49,14 +48,18 @@ export async function upsertImportedProduct(
     name: imported.name,
     brand: imported.brand ?? null,
     description: imported.description ?? null,
-    images: imported.images,
+    longDescription: imported.longDescription ?? null,
+    attributes: imported.attributes
+      ? (imported.attributes as Prisma.InputJsonValue)
+      : undefined,
+    images: imported.images.length > 0 ? imported.images : (existingMeta?.product.images ?? []),
     basePrice: imported.basePrice,
     markupPercent,
     finalPrice,
     stock: imported.stock,
     stockStatus: imported.stockStatus,
     tags: imported.tags,
-    source: imported.source as ProductSource,
+    source: imported.source as any,
     categoryId: category?.id ?? null,
     isActive: true,
   } as const;
@@ -93,7 +96,7 @@ export async function upsertImportedProduct(
       slug: `${slugSeed}-${Math.random().toString(36).slice(2, 7)}`,
       sourceMeta: {
         create: {
-          source: imported.source as ProductSource,
+          source: imported.source as any,
           externalId: imported.externalId,
           sourceUrl: imported.sourceUrl,
           lastImportedAt: new Date(),

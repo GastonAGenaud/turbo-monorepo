@@ -3,6 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import {
+  ADMIN_WHATSAPP_DISPLAY,
+  MANUAL_PAYMENT_COPY,
+  SHIPPING_COPY,
+  buildCheckoutWhatsAppMessage,
+  buildWhatsAppUrl,
+} from "@ggseeds/shared";
 import { Button, Input, Label, Textarea } from "@ggseeds/ui";
 
 import { useCart } from "./cart-provider";
@@ -44,8 +51,9 @@ export function CheckoutForm() {
 
     const body = await response.json();
     clear();
-    setMessage(`Orden creada: ${body.orderId}`);
+    setMessage(`Orden creada: ${body.orderId}. Te abrimos WhatsApp para coordinar pago y envío.`);
     setLoading(false);
+    window.open(buildWhatsAppUrl(buildCheckoutWhatsAppMessage(body.orderId)), "_blank", "noopener,noreferrer");
     router.push(`/pedidos?orderId=${body.orderId}`);
   }
 
@@ -56,6 +64,18 @@ export function CheckoutForm() {
         await onSubmit(formData);
       }}
     >
+      <div className="glass-panel rounded-[28px] p-4 text-sm text-[color:var(--muted)]">
+        <p className="font-medium text-[color:var(--fg)]">Pago coordinado con administración</p>
+        <p className="mt-2">{MANUAL_PAYMENT_COPY}</p>
+        <p className="mt-1">{SHIPPING_COPY}</p>
+        <p className="mt-1">
+          WhatsApp de contacto:{" "}
+          <a href={buildWhatsAppUrl()} target="_blank" rel="noreferrer" className="text-[color:var(--accent)]">
+            {ADMIN_WHATSAPP_DISPLAY}
+          </a>
+        </p>
+      </div>
+
       <div>
         <Label htmlFor="fullName">Nombre completo</Label>
         <Input id="fullName" name="fullName" required />
@@ -89,8 +109,8 @@ export function CheckoutForm() {
         <Textarea id="notes" name="notes" />
       </div>
 
-      <Button type="submit" disabled={loading || items.length === 0}>
-        {loading ? "Procesando..." : "Confirmar pedido"}
+      <Button type="submit" className="rounded-full" disabled={loading || items.length === 0}>
+        {loading ? "Procesando..." : "Confirmar pedido y coordinar pago"}
       </Button>
 
       {message ? <p className="text-sm text-[color:var(--muted)]">{message}</p> : null}

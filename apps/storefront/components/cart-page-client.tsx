@@ -24,14 +24,14 @@ export function CartPageClient() {
       return;
     }
 
-    const ids = items.map((item) => item.productId).join(",");
+    const ids = items.map((item: any) => item.productId).join(",");
     void fetch(`/api/products?ids=${ids}`)
       .then((response) => response.json())
       .then((body) => setProducts(body.items ?? []));
   }, [items]);
 
   const rows = items
-    .map((item) => {
+    .map((item: any) => {
       const product = products.find((candidate) => candidate.id === item.productId);
       if (!product) {
         return null;
@@ -53,10 +53,11 @@ export function CartPageClient() {
 
   if (rows.length === 0) {
     return (
-      <Card className="border-[var(--line)] bg-[color:var(--card)]">
+      <Card className="surface-panel rounded-[28px]">
         <CardContent className="p-6">
-          <p className="text-[color:var(--muted)]">Tu carrito está vacío.</p>
-          <Button asChild className="mt-4">
+          <p className="font-serif-display text-3xl">Tu carrito está vacío.</p>
+          <p className="mt-3 text-sm text-[color:var(--muted)]">Volvamos al catálogo para explorar nuevas genéticas disponibles.</p>
+          <Button asChild className="mt-5 rounded-full px-6">
             <Link href="/catalogo">Ir al catálogo</Link>
           </Button>
         </CardContent>
@@ -66,11 +67,11 @@ export function CartPageClient() {
 
   return (
     <div className="space-y-4">
-      {rows.map((row) => (
-        <Card key={row.productId} className="border-[var(--line)] bg-[color:var(--card)]">
+      {rows.map((row: any) => (
+        <Card key={row.productId} className="surface-panel rounded-[28px]">
           <CardContent className="flex items-center justify-between gap-4 p-4">
             <div>
-              <Link href={`/producto/${row.product.slug}`} className="font-medium">
+              <Link href={`/producto/${row.product.slug}`} className="font-serif-display text-2xl">
                 {row.product.name}
               </Link>
               <p className="text-sm text-[color:var(--muted)]">${row.product.finalPrice.toLocaleString("es-AR")}</p>
@@ -84,7 +85,7 @@ export function CartPageClient() {
                 onChange={(event) => setQuantity(row.productId, Number(event.target.value))}
                 className="w-16 rounded border border-[var(--line)] bg-transparent px-2 py-1"
               />
-              <Button variant="outline" onClick={() => removeItem(row.productId)}>
+              <Button variant="outline" className="rounded-full" onClick={() => removeItem(row.productId)}>
                 Quitar
               </Button>
             </div>
@@ -92,14 +93,14 @@ export function CartPageClient() {
         </Card>
       ))}
 
-      <Card className="border-[var(--line)] bg-[color:var(--card)]">
+      <Card className="surface-panel rounded-[28px]">
         <CardContent className="flex items-center justify-between p-4">
           <p className="font-semibold">Total</p>
           <p className="text-xl font-bold text-[color:var(--accent)]">${total.toLocaleString("es-AR")}</p>
         </CardContent>
       </Card>
 
-      <Button asChild className="w-full">
+      <Button asChild className="w-full rounded-full">
         <Link href="/checkout">Continuar checkout</Link>
       </Button>
     </div>

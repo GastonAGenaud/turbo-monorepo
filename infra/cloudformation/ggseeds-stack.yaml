@@ -1,0 +1,469 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  GGseeds MVP infra. Diseñado para storefront/admin en Vercel y worker de imports en AWS ECS.
+  En modo local crea solo recursos compatibles con LocalStack.
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: ggseeds
+  EnvironmentName:
+    Type: String
+    Default: prod
+  DeploymentMode:
+    Type: String
+    Default: aws
+    AllowedValues:
+      - aws
+      - local
+  ExistingDatabaseUrl:
+    Type: String
+    Default: ""
+    NoEcho: true
+  CronSecretValue:
+    Type: String
+    Default: "change-me"
+    NoEcho: true
+  MarkupPercentDefault:
+    Type: String
+    Default: "15"
+  ScraperScheduleExpression:
+    Type: String
+    Default: cron(0 10 * * ? *)
+  ScraperConcurrency:
+    Type: Number
+    Default: 2
+  ScraperDelayMs:
+    Type: Number
+    Default: 800
+  ScraperMaxRetries:
+    Type: Number
+    Default: 3
+  ScraperTimeoutMs:
+    Type: Number
+    Default: 15000
+  ScraperMaxProducts:
+    Type: Number
+    Default: 40
+  VpcId:
+    Type: String
+    Default: ""
+  EcsSubnetIds:
+    Type: String
+    Default: ""
+  TaskCpu:
+    Type: String
+    Default: "512"
+  TaskMemory:
+    Type: String
+    Default: "1024"
+  CreateRds:
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "true"
+      - "false"
+  DbName:
+    Type: String
+    Default: ggseeds
+  DbMasterUsername:
+    Type: String
+    Default: ggseeds_admin
+  DbMasterPassword:
+    Type: String
+    Default: ""
+    NoEcho: true
+  DbInstanceClass:
+    Type: String
+    Default: db.t4g.micro
+  DbEngineVersion:
+    Type: String
+    Default: "17.6"
+  DbAllocatedStorage:
+    Type: Number
+    Default: 20
+  DbMaxAllocatedStorage:
+    Type: Number
+    Default: 100
+  DbAllowedCidr:
+    Type: String
+    Default: 0.0.0.0/0
+
+Conditions:
+  IsAws: !Equals [!Ref DeploymentMode, aws]
+  HasDatabaseUrl: !Not [!Equals [!Ref ExistingDatabaseUrl, ""]]
+  HasVpcId: !Not [!Equals [!Ref VpcId, ""]]
+  HasSubnetIds: !Not [!Equals [!Ref EcsSubnetIds, ""]]
+  ShouldCreateRds: !And
+    - !Condition IsAws
+    - !Condition HasVpcId
+    - !Condition HasSubnetIds
+    - !Equals [!Ref CreateRds, "true"]
+  HasEcsNetworking: !And
+    - !Condition IsAws
+    - !Condition HasVpcId
+    - !Condition HasSubnetIds
+
+Resources:
+  AssetsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${ProjectName}-${EnvironmentName}-assets-${AWS::AccountId}-${AWS::Region}"
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: Environment
+          Value: !Ref EnvironmentName
+
+  DatabaseSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Condition: ShouldCreateRds
+    Properties:
+      GroupDescription: !Sub "Acceso PostgreSQL ${ProjectName}-${EnvironmentName}"
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: !Ref DbAllowedCidr
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}-db"
+
+  DatabaseSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Condition: ShouldCreateRds
+    Properties:
+      DBSubnetGroupDescription: !Sub "Subnets DB ${ProjectName}-${EnvironmentName}"
+      SubnetIds: !Split [",", !Ref EcsSubnetIds]
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}-db-subnets"
+
+  DatabaseInstance:
+    Type: AWS::RDS::DBInstance
+    Condition: ShouldCreateRds
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+    Properties:
+      DBInstanceIdentifier: !Sub "${ProjectName}-${EnvironmentName}-db"
+      Engine: postgres
+      EngineVersion: !Ref DbEngineVersion
+      DBName: !Ref DbName
+      MasterUsername: !Ref DbMasterUsername
+      MasterUserPassword: !Ref DbMasterPassword
+      DBInstanceClass: !Ref DbInstanceClass
+      AllocatedStorage: !Ref DbAllocatedStorage
+      MaxAllocatedStorage: !Ref DbMaxAllocatedStorage
+      StorageType: gp3
+      StorageEncrypted: true
+      PubliclyAccessible: true
+      MultiAZ: false
+      AutoMinorVersionUpgrade: true
+      BackupRetentionPeriod: 1
+      DeletionProtection: false
+      CopyTagsToSnapshot: true
+      DBSubnetGroupName: !Ref DatabaseSubnetGroup
+      VPCSecurityGroups:
+        - !Ref DatabaseSecurityGroup
+
+  DatabaseUrlSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub "/${ProjectName}/${EnvironmentName}/database-url"
+      Description: Database URL usada por el worker de imports
+      SecretString: !If
+        - ShouldCreateRds
+        - !Sub "postgresql://${DbMasterUsername}:${DbMasterPassword}@${DatabaseInstance.Endpoint.Address}:${DatabaseInstance.Endpoint.Port}/${DbName}?schema=public"
+        - !If
+          - HasDatabaseUrl
+          - !Ref ExistingDatabaseUrl
+          - "postgresql://replace-me:replace-me@db.example.com:5432/ggseeds?schema=public"
+
+  CronSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub "/${ProjectName}/${EnvironmentName}/cron-secret"
+      Description: Token de protección para cron/import endpoints
+      SecretString: !Ref CronSecretValue
+
+  MarkupPercentParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: !Sub "/${ProjectName}/${EnvironmentName}/markup-percent"
+      Type: String
+      Value: !Ref MarkupPercentDefault
+      Tier: Standard
+
+  ScraperLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/ecs/${ProjectName}/${EnvironmentName}/imports"
+      RetentionInDays: 14
+
+  ScraperCluster:
+    Type: AWS::ECS::Cluster
+    Condition: HasEcsNetworking
+    Properties:
+      ClusterName: !Sub "${ProjectName}-${EnvironmentName}-cluster"
+      Tags:
+        - Key: Project
+          Value: !Ref ProjectName
+        - Key: Environment
+          Value: !Ref EnvironmentName
+
+  ScraperRepository:
+    Type: AWS::ECR::Repository
+    Condition: HasEcsNetworking
+    Properties:
+      RepositoryName: !Sub "${ProjectName}-${EnvironmentName}-scraper"
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      ImageTagMutability: MUTABLE
+      EmptyOnDelete: true
+
+  ScraperSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Condition: HasEcsNetworking
+    Properties:
+      GroupDescription: !Sub "Egress-only SG para imports ${ProjectName}-${EnvironmentName}"
+      VpcId: !Ref VpcId
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub "${ProjectName}-${EnvironmentName}-imports"
+
+  ScraperTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Condition: HasEcsNetworking
+    Properties:
+      RoleName: !Sub "${ProjectName}-${EnvironmentName}-scraper-exec"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Policies:
+        - PolicyName: read-app-secrets
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                  - ssm:GetParameter
+                Resource:
+                  - !Ref DatabaseUrlSecret
+                  - !Ref CronSecret
+                  - !Sub "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${ProjectName}/${EnvironmentName}/*"
+
+  ScraperTaskRole:
+    Type: AWS::IAM::Role
+    Condition: HasEcsNetworking
+    Properties:
+      RoleName: !Sub "${ProjectName}-${EnvironmentName}-scraper-task"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+
+  SchedulerInvokeRole:
+    Type: AWS::IAM::Role
+    Condition: HasEcsNetworking
+    Properties:
+      RoleName: !Sub "${ProjectName}-${EnvironmentName}-events"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: run-import-task
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecs:RunTask
+                Resource: !Ref ScraperTaskDefinition
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource:
+                  - !GetAtt ScraperTaskExecutionRole.Arn
+                  - !GetAtt ScraperTaskRole.Arn
+
+  AdminImportUser:
+    Type: AWS::IAM::User
+    Condition: HasEcsNetworking
+    Properties:
+      UserName: !Sub "${ProjectName}-${EnvironmentName}-admin-import"
+      Policies:
+        - PolicyName: trigger-import-task
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ecs:RunTask
+                Resource: !Ref ScraperTaskDefinition
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource:
+                  - !GetAtt ScraperTaskExecutionRole.Arn
+                  - !GetAtt ScraperTaskRole.Arn
+              - Effect: Allow
+                Action:
+                  - ecs:DescribeTasks
+                  - ecs:DescribeTaskDefinition
+                  - ecs:DescribeClusters
+                Resource: "*"
+
+  AdminImportAccessKey:
+    Type: AWS::IAM::AccessKey
+    Condition: HasEcsNetworking
+    Properties:
+      UserName: !Ref AdminImportUser
+
+  AdminImportCredentialsSecret:
+    Type: AWS::SecretsManager::Secret
+    Condition: HasEcsNetworking
+    Properties:
+      Name: !Sub "/${ProjectName}/${EnvironmentName}/admin-import-credentials"
+      Description: Credenciales limitadas para que el panel admin en Vercel pueda lanzar imports en ECS
+      SecretString: !Sub
+        - '{"AWS_ACCESS_KEY_ID":"${AccessKeyId}","AWS_SECRET_ACCESS_KEY":"${SecretAccessKey}"}'
+        - AccessKeyId: !Ref AdminImportAccessKey
+          SecretAccessKey: !GetAtt AdminImportAccessKey.SecretAccessKey
+
+  ScraperTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Condition: HasEcsNetworking
+    Properties:
+      Family: !Sub "${ProjectName}-${EnvironmentName}-scraper"
+      Cpu: !Ref TaskCpu
+      Memory: !Ref TaskMemory
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: !GetAtt ScraperTaskExecutionRole.Arn
+      TaskRoleArn: !GetAtt ScraperTaskRole.Arn
+      RuntimePlatform:
+        OperatingSystemFamily: LINUX
+        CpuArchitecture: X86_64
+      ContainerDefinitions:
+        - Name: ggseeds-scraper
+          Image: !Sub "${ScraperRepository.RepositoryUri}:latest"
+          Essential: true
+          Command:
+            - pnpm
+            - import:all
+          Environment:
+            - Name: LOG_LEVEL
+              Value: info
+            - Name: MARKUP_PERCENT_DEFAULT
+              Value: !Ref MarkupPercentDefault
+            - Name: SCRAPER_CONCURRENCY
+              Value: !Ref ScraperConcurrency
+            - Name: SCRAPER_DELAY_MS
+              Value: !Ref ScraperDelayMs
+            - Name: SCRAPER_MAX_RETRIES
+              Value: !Ref ScraperMaxRetries
+            - Name: SCRAPER_TIMEOUT_MS
+              Value: !Ref ScraperTimeoutMs
+            - Name: SCRAPER_MAX_PRODUCTS
+              Value: !Ref ScraperMaxProducts
+          Secrets:
+            - Name: DATABASE_URL
+              ValueFrom: !Ref DatabaseUrlSecret
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref ScraperLogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: scraper
+
+  DailyImportRule:
+    Type: AWS::Events::Rule
+    Condition: HasEcsNetworking
+    Properties:
+      Name: !Sub "${ProjectName}-${EnvironmentName}-daily-import"
+      Description: Ejecuta el import diario de GGseeds en ECS Fargate
+      ScheduleExpression: !Ref ScraperScheduleExpression
+      State: ENABLED
+      Targets:
+        - Id: ggseeds-scraper-daily
+          Arn: !GetAtt ScraperCluster.Arn
+          RoleArn: !GetAtt SchedulerInvokeRole.Arn
+          EcsParameters:
+            LaunchType: FARGATE
+            PlatformVersion: LATEST
+            TaskCount: 1
+            TaskDefinitionArn: !Ref ScraperTaskDefinition
+            NetworkConfiguration:
+              AwsVpcConfiguration:
+                AssignPublicIp: ENABLED
+                SecurityGroups:
+                  - !Ref ScraperSecurityGroup
+                Subnets: !Split [",", !Ref EcsSubnetIds]
+
+Outputs:
+  AssetsBucketName:
+    Value: !Ref AssetsBucket
+  DatabaseUrlSecretArn:
+    Value: !Ref DatabaseUrlSecret
+  DatabaseEndpoint:
+    Value: !If [ShouldCreateRds, !GetAtt DatabaseInstance.Endpoint.Address, ""]
+  DatabasePort:
+    Value: !If [ShouldCreateRds, !GetAtt DatabaseInstance.Endpoint.Port, ""]
+  DatabaseName:
+    Value: !If [ShouldCreateRds, !Ref DbName, ""]
+  DatabaseSecurityGroupId:
+    Value: !If [ShouldCreateRds, !Ref DatabaseSecurityGroup, ""]
+  CronSecretArn:
+    Value: !Ref CronSecret
+  MarkupPercentParameterName:
+    Value: !Ref MarkupPercentParameter
+  ScraperLogGroupName:
+    Value: !Ref ScraperLogGroup
+  ImportExecutionMode:
+    Value: !If [HasEcsNetworking, ecs, inline]
+  ScraperEcrRepositoryUri:
+    Value: !If [HasEcsNetworking, !GetAtt ScraperRepository.RepositoryUri, ""]
+  ScraperClusterArn:
+    Value: !If [HasEcsNetworking, !GetAtt ScraperCluster.Arn, ""]
+  ScraperTaskDefinitionArn:
+    Value: !If [HasEcsNetworking, !Ref ScraperTaskDefinition, ""]
+  ScraperSecurityGroupId:
+    Value: !If [HasEcsNetworking, !Ref ScraperSecurityGroup, ""]
+  ScraperSubnetIds:
+    Value: !If [HasEcsNetworking, !Ref EcsSubnetIds, ""]
+  ScraperContainerName:
+    Value: !If [HasEcsNetworking, ggseeds-scraper, ""]
+  AdminImportCredentialsSecretArn:
+    Value: !If [HasEcsNetworking, !Ref AdminImportCredentialsSecret, ""]

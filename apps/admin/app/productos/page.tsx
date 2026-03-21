@@ -43,7 +43,7 @@ export default async function ProductsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product) => (
+              {products.map((product: any) => (
                 <TableRow key={product.id}>
                   <TableCell>
                     <div>

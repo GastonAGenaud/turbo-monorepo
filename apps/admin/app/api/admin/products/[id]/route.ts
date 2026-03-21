@@ -3,10 +3,11 @@ import { NextResponse } from "next/server";
 import { db } from "@ggseeds/db";
 import { applyMarkup, productMutationSchema } from "@ggseeds/shared";
 
+import { writeAuditLog, extractIp } from "../../../../../lib/audit";
 import { ensureAdminApi } from "../../../../../lib/guard";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const guard = await ensureAdminApi();
+  const guard = await ensureAdminApi(request);
   if (!guard.ok) {
     return guard.response;
   }
@@ -17,7 +18,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const payload = productMutationSchema.parse(await request.json());
 
     await db.product.update({
-      where: { id },
+      where: { id, deletedAt: null },
       data: {
         sku: payload.sku,
         slug: payload.slug,
@@ -37,6 +38,15 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       },
     });
 
+    await writeAuditLog({
+      userId: guard.userId,
+      action: "UPDATE",
+      entity: "Product",
+      entityId: id,
+      metadata: { name: payload.name, sku: payload.sku },
+      ipAddress: guard.ip,
+    });
+
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json(
@@ -46,13 +56,31 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
 }
 
-export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
-  const guard = await ensureAdminApi();
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const guard = await ensureAdminApi(request);
   if (!guard.ok) {
     return guard.response;
   }
 
   const { id } = await params;
-  await db.product.delete({ where: { id } });
+
+  // Soft delete en lugar de hard delete
+  const product = await db.product.update({
+    where: { id, deletedAt: null },
+    data: {
+      deletedAt: new Date(),
+      isActive: false,
+    },
+  });
+
+  await writeAuditLog({
+    userId: guard.userId,
+    action: "SOFT_DELETE",
+    entity: "Product",
+    entityId: id,
+    metadata: { name: product.name, sku: product.sku },
+    ipAddress: guard.ip,
+  });
+
   return NextResponse.json({ ok: true });
 }
