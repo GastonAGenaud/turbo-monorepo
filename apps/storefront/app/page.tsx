@@ -7,7 +7,7 @@ import { Button } from "@ggseeds/ui";
 import { FloatingSeeds } from "../components/floating-seeds";
 import { Hero3D } from "../components/hero-3d";
 import { ProductCard } from "../components/product-card";
-import { AMSTERDAM_STORY_IMAGE, CATEGORY_COPY, LEGAL_BULLETS } from "../lib/brand";
+import { AMSTERDAM_STORY_IMAGE, CATEGORY_COPY, LEGAL_BULLETS, maskBrand } from "../lib/brand";
 import { getHomeData } from "../lib/catalog";
 
 export default async function HomePage() {
@@ -95,7 +95,7 @@ export default async function HomePage() {
               <div className="mt-3 flex items-end justify-between gap-4">
                 <div>
                   <p className="font-serif-display text-2xl text-[color:var(--fg)]">{heroProduct.name}</p>
-                  <p className="mt-1 text-sm text-[color:var(--muted)]">{heroProduct.brand ?? "GGseeds selection"}</p>
+                  <p className="mt-1 text-sm text-[color:var(--muted)]">{maskBrand(heroProduct.brand) ?? "GGseeds selection"}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-xs uppercase tracking-[0.22em] text-[color:var(--muted)]">Disponible</p>

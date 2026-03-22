@@ -6,6 +6,7 @@ import { Badge, Button, Card, CardContent } from "@ggseeds/ui";
 
 import { useCart } from "./cart-provider";
 import { ProductImage } from "./product-image";
+import { maskBrand } from "../lib/brand";
 
 interface ProductCardProps {
   product: {
@@ -44,7 +45,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <CardContent className="space-y-4 p-4">
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-[10px] uppercase tracking-[0.28em] text-[color:var(--muted)]">{product.brand ?? "Sin marca"}</p>
+            <p className="text-[10px] uppercase tracking-[0.28em] text-[color:var(--muted)]">{maskBrand(product.brand) ?? "GG Seeds"}</p>
             <span className="text-[10px] uppercase tracking-[0.24em] text-[color:var(--accent)]">
               {isAvailable ? "Stock real" : "Agotado"}
             </span>

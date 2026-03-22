@@ -14,6 +14,11 @@ interface CartContextValue {
   removeItem: (productId: string) => void;
   clear: () => void;
   setQuantity: (productId: string, quantity: number) => void;
+  /** Timestamp (Date.now()) of the last addItem call — use for animations */
+  lastAdded: number;
+  drawerOpen: boolean;
+  openDrawer: () => void;
+  closeDrawer: () => void;
 }
 
 const CartContext = createContext<CartContextValue | undefined>(undefined);
@@ -23,6 +28,8 @@ const STORAGE_KEY = "ggseeds-cart";
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const { data } = useSession();
   const [items, setItems] = useState<CartItem[]>([]);
+  const [lastAdded, setLastAdded] = useState(0);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -40,10 +47,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [items]);
 
   useEffect(() => {
-    if (!data?.user || items.length === 0) {
-      return;
-    }
-
+    if (!data?.user || items.length === 0) return;
     void fetch("/api/cart/sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -59,11 +63,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           const existing = prev.find((item) => item.productId === productId);
           if (existing) {
             return prev.map((item: any) =>
-              item.productId === productId ? { ...item, quantity: item.quantity + quantity } : item,
+              item.productId === productId
+                ? { ...item, quantity: item.quantity + quantity }
+                : item,
             );
           }
           return [...prev, { productId, quantity }];
         });
+        setLastAdded(Date.now());
+        setDrawerOpen(true);
       },
       removeItem: (productId: string) => {
         setItems((prev) => prev.filter((item) => item.productId !== productId));
@@ -72,12 +80,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setQuantity: (productId: string, quantity: number) => {
         setItems((prev) =>
           prev
-            .map((item: any) => (item.productId === productId ? { ...item, quantity } : item))
+            .map((item: any) =>
+              item.productId === productId ? { ...item, quantity } : item,
+            )
             .filter((item) => item.quantity > 0),
         );
       },
+      lastAdded,
+      drawerOpen,
+      openDrawer: () => setDrawerOpen(true),
+      closeDrawer: () => setDrawerOpen(false),
     }),
-    [items],
+    [items, lastAdded, drawerOpen],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
@@ -85,8 +99,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
 export function useCart() {
   const ctx = useContext(CartContext);
-  if (!ctx) {
-    throw new Error("useCart debe usarse dentro de CartProvider");
-  }
+  if (!ctx) throw new Error("useCart debe usarse dentro de CartProvider");
   return ctx;
 }

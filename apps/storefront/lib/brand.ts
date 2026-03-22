@@ -13,6 +13,16 @@ export const CATEGORY_COPY: Record<string, string> = {
   feminizadas: "Estabilidad, pureza genética y perfiles clásicos de los bancos más buscados.",
 };
 
+/**
+ * Masks third-party brand names for white-label display.
+ * "Merlin Seeds" (and variations) → "GG Seeds"
+ * The original brand value is kept in DB for catalog logic.
+ */
+export function maskBrand(brand: string | null | undefined): string | null {
+  if (!brand) return null;
+  return brand.replace(/merl[ií]n\s*seeds/gi, "GG Seeds");
+}
+
 export const LEGAL_BULLETS = [
   "Venta exclusiva para mayores de 18 años.",
   "Semillas destinadas a coleccionismo y preservación genética.",
