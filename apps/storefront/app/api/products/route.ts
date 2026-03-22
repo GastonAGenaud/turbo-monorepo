@@ -2,13 +2,6 @@ import { NextResponse } from "next/server";
 
 import { db } from "@ggseeds/db";
 
-type ProductCartItem = {
-  id: string;
-  name: string;
-  slug: string;
-  finalPrice: unknown;
-};
-
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const ids = (searchParams.get("ids") ?? "").split(",").filter(Boolean);
@@ -17,16 +10,16 @@ export async function GET(request: Request) {
   if (ids.length === 0) {
     const safeTake = Number.isFinite(take) ? Math.min(Math.max(take, 1), 48) : 12;
     const items = await db.product.findMany({
-      where: {
-        isActive: true,
-      },
+      where: { isActive: true },
       orderBy: { createdAt: "desc" },
       take: safeTake,
       select: {
         id: true,
         name: true,
         slug: true,
+        brand: true,
         finalPrice: true,
+        images: true,
       },
     });
 
@@ -38,7 +31,9 @@ export async function GET(request: Request) {
     });
   }
 
-  const items = (await db.product.findMany({
+  // When fetching by IDs (cart drawer), return a direct array so
+  // the drawer can consume it with Array.isArray()
+  const items = await db.product.findMany({
     where: {
       id: { in: ids },
       isActive: true,
@@ -47,14 +42,16 @@ export async function GET(request: Request) {
       id: true,
       name: true,
       slug: true,
+      brand: true,
       finalPrice: true,
+      images: true,
     },
-  })) as ProductCartItem[];
+  });
 
-  return NextResponse.json({
-    items: items.map((item: any) => ({
+  return NextResponse.json(
+    items.map((item: any) => ({
       ...item,
       finalPrice: Number(item.finalPrice),
     })),
-  });
+  );
 }
