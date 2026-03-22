@@ -15,13 +15,13 @@ export default function HeroSeedScene() {
         gl={{ antialias: true, alpha: true }}
         style={{ background: "transparent", width: "100%", height: "100%" }}
       >
-        {/* Studio lighting — enhanced with accent tones */}
-        <ambientLight intensity={0.2} />
-        <directionalLight position={[5, 8, 3]} intensity={1.8} />
-        <directionalLight position={[-3, 4, -2]} intensity={0.6} color="#a8c8ff" />
-        <directionalLight position={[0, -4, 4]} intensity={0.3} color="#ffe8c0" />
+        {/* Studio lighting tuned for Californian Orange warm amber palette */}
+        <ambientLight intensity={0.22} />
+        <directionalLight position={[5, 8, 3]} intensity={1.9} color="#fff5e8" />
+        <directionalLight position={[-3, 4, -2]} intensity={0.55} color="#b8d4ff" />
+        <directionalLight position={[0, -4, 4]} intensity={0.28} color="#ffd4a0" />
 
-        {/* Accent rim light — green tint from the brand color */}
+        {/* Accent rim light — brand green tint */}
         <spotLight
           position={[-3, 2, -2]}
           intensity={0.5}
@@ -30,17 +30,18 @@ export default function HeroSeedScene() {
           color="#0bc38f"
         />
         <spotLight
-          position={[0, 6, 1]}
-          intensity={0.7}
-          angle={0.38}
-          penumbra={0.85}
+          position={[2, 6, 2]}
+          intensity={0.8}
+          angle={0.36}
+          penumbra={0.8}
+          color="#ffcc88"
         />
         <spotLight
           position={[-4, 2, 4]}
-          intensity={0.3}
+          intensity={0.32}
           angle={0.5}
           penumbra={1}
-          color="#ffe8c0"
+          color="#ffe0b0"
         />
 
         {/* Main 3D cannabis seed */}

@@ -41,7 +41,7 @@ function interleaveByBrand<T extends { brand: string | null; finalPrice: unknown
 }
 
 export async function getHomeData() {
-  const [categories, products] = await Promise.all([
+  const [categories, products, heroProduct] = await Promise.all([
     db.category.findMany({
       take: 6,
       orderBy: { name: "asc" },
@@ -59,9 +59,19 @@ export async function getHomeData() {
         category: true,
       },
     }),
+    // Hero card: prefer a Merlin Seeds product with stock
+    db.product.findFirst({
+      where: {
+        isActive: true,
+        brand: { contains: "Merlin", mode: "insensitive" },
+        OR: [{ stockStatus: "IN_STOCK" }, { stock: { gt: 0 } }],
+      },
+      orderBy: { finalPrice: "desc" },
+      include: { category: true },
+    }),
   ]);
 
-  return { categories, products };
+  return { categories, products, heroProduct };
 }
 
 export async function getCatalog(filters: CatalogFilters) {

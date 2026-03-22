@@ -39,29 +39,32 @@ function createSeedGeometry() {
   return geo;
 }
 
-/* ---------- Procedural textures ---------- */
+/* ---------- Procedural textures — Californian Orange palette ---------- */
 function createDiffuseMap() {
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 1024;
   const ctx = canvas.getContext("2d")!;
 
-  ctx.fillStyle = "#2e1d0e";
+  // Base: warm amber-brown — Californian Orange palette
+  ctx.fillStyle = "#3b1c06";
   ctx.fillRect(0, 0, 1024, 1024);
 
-  const radial = ctx.createRadialGradient(512, 512, 80, 512, 512, 520);
-  radial.addColorStop(0, "rgba(80,50,22,0.35)");
-  radial.addColorStop(1, "rgba(10,5,2,0.45)");
+  // Radial depth gradient: golden centre, dark edges
+  const radial = ctx.createRadialGradient(512, 400, 60, 512, 512, 530);
+  radial.addColorStop(0, "rgba(140,72,18,0.45)");
+  radial.addColorStop(0.55, "rgba(90,38,8,0.30)");
+  radial.addColorStop(1, "rgba(8,3,0,0.55)");
   ctx.fillStyle = radial;
   ctx.fillRect(0, 0, 1024, 1024);
 
-  // Tiger stripes
+  // Tiger stripes — warm orange/amber wavy bands (hue 15–32)
   for (let i = 0; i < 55; i++) {
     ctx.save();
-    ctx.globalAlpha = 0.1 + Math.random() * 0.22;
-    const hue = 22 + Math.random() * 16;
-    const sat = 38 + Math.random() * 22;
-    const lum = 28 + Math.random() * 22;
+    ctx.globalAlpha = 0.12 + Math.random() * 0.24;
+    const hue = 15 + Math.random() * 17;
+    const sat = 50 + Math.random() * 25;
+    const lum = 30 + Math.random() * 24;
     ctx.strokeStyle = `hsl(${hue},${sat}%,${lum}%)`;
     ctx.lineWidth = 1.5 + Math.random() * 7;
     ctx.beginPath();
@@ -74,11 +77,11 @@ function createDiffuseMap() {
     ctx.restore();
   }
 
-  // Speckle noise
+  // Speckle noise — warm orange-copper grain
   for (let i = 0; i < 7000; i++) {
-    const r = 55 + Math.random() * 60;
-    const g = 30 + Math.random() * 35;
-    const b = 8 + Math.random() * 20;
+    const r = 90 + Math.random() * 80;
+    const g = 35 + Math.random() * 40;
+    const b = 4 + Math.random() * 16;
     ctx.fillStyle = `rgba(${r},${g},${b},${0.12 + Math.random() * 0.22})`;
     const px = Math.random() * 1024;
     const py = Math.random() * 1024;
@@ -194,7 +197,7 @@ export function SeedModel() {
           clearcoat={0.32}
           clearcoatRoughness={0.38}
           envMapIntensity={0.65}
-          color="#4a2e14"
+          color="#5e2a08"
         />
       </mesh>
     </group>
@@ -215,7 +218,6 @@ export function MiniSeed({
 }) {
   const meshRef = useRef<THREE.Mesh>(null!);
   const geometry = useMemo(createSeedGeometry, []);
-
   const diffuseMap = useMemo(createDiffuseMap, []);
 
   useFrame((state) => {
@@ -243,7 +245,7 @@ export function MiniSeed({
         clearcoat={0.25}
         clearcoatRoughness={0.4}
         envMapIntensity={0.5}
-        color="#4a2e14"
+        color="#5e2a08"
       />
     </mesh>
   );

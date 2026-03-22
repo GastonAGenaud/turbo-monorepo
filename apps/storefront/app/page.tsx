@@ -11,8 +11,7 @@ import { AMSTERDAM_STORY_IMAGE, CATEGORY_COPY, LEGAL_BULLETS } from "../lib/bran
 import { getHomeData } from "../lib/catalog";
 
 export default async function HomePage() {
-  const { categories, products } = await getHomeData();
-  const heroProduct = products[0] ?? null;
+  const { categories, products, heroProduct } = await getHomeData();
   const highlights = [
     {
       title: "Stock real",
