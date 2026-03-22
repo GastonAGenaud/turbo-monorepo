@@ -19,33 +19,35 @@ export default function HeroSeedScene() {
           if (!gl.getContext()) throw new Error("WebGL context unavailable");
         }}
       >
-        {/* Studio lighting tuned for Californian Orange warm amber palette */}
-        <ambientLight intensity={0.22} />
-        <directionalLight position={[5, 8, 3]} intensity={1.9} color="#fff5e8" />
-        <directionalLight position={[-3, 4, -2]} intensity={0.55} color="#b8d4ff" />
-        <directionalLight position={[0, -4, 4]} intensity={0.28} color="#ffd4a0" />
+        {/* Studio lighting tuned for cannabis bud — green + natural white */}
+        <ambientLight intensity={0.30} color="#d8f0d0" />
+        <directionalLight position={[4, 9, 3]} intensity={2.2} color="#f5fff0" />
+        <directionalLight position={[-3, 3, -2]} intensity={0.55} color="#c8e8ff" />
+        <directionalLight position={[0, -3, 4]} intensity={0.22} color="#e0ffd8" />
 
-        {/* Accent rim light — brand green tint */}
+        {/* Brand green accent rim — enhances trichome sparkle */}
         <spotLight
-          position={[-3, 2, -2]}
-          intensity={0.5}
-          angle={0.6}
+          position={[-2, 3, -3]}
+          intensity={0.65}
+          angle={0.55}
           penumbra={1}
-          color="#0bc38f"
+          color="#1ce6b3"
         />
+        {/* Warm top light — makes pistils pop orange */}
         <spotLight
-          position={[2, 6, 2]}
-          intensity={0.8}
-          angle={0.36}
-          penumbra={0.8}
-          color="#ffcc88"
+          position={[2, 7, 1]}
+          intensity={0.9}
+          angle={0.38}
+          penumbra={0.9}
+          color="#fff8e0"
         />
+        {/* Subtle side fill — depth on bud clusters */}
         <spotLight
-          position={[-4, 2, 4]}
-          intensity={0.32}
-          angle={0.5}
+          position={[-4, 1, 3]}
+          intensity={0.28}
+          angle={0.55}
           penumbra={1}
-          color="#ffe0b0"
+          color="#a8d8a0"
         />
 
         {/* Main 3D cannabis seed */}

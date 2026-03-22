@@ -4,89 +4,151 @@ import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-/* ---------- Procedural seed geometry ---------- */
-function createSeedGeometry() {
-  const geo = new THREE.SphereGeometry(1, 64, 64);
+/* ---------- Cannabis bud geometry — bumpy, nodular, organic ---------- */
+function createBudGeometry() {
+  const geo = new THREE.SphereGeometry(1, 128, 128);
   const pos = geo.attributes.position as THREE.BufferAttribute;
 
   for (let i = 0; i < pos.count; i++) {
-    let x = pos.getX(i);
-    let y = pos.getY(i);
-    let z = pos.getZ(i);
+    const x = pos.getX(i);
+    const y = pos.getY(i);
+    const z = pos.getZ(i);
 
-    // Elongate along Y axis
-    y *= 1.45;
+    const len = Math.sqrt(x * x + y * y + z * z);
+    const nx = x / len;
+    const ny = y / len;
+    const nz = z / len;
 
-    // Taper: pointed bottom, rounded top
-    const t = (y + 1.45) / 2.9;
-    const taper = 0.55 + 0.45 * Math.sin(t * Math.PI);
-    x *= taper;
-    z *= taper;
+    // Multi-octave bumps — simulate cannabis calyx clusters
+    const f1 = 3.8, f2 = 7.5, f3 = 15.0;
+    const a1 = 0.22, a2 = 0.10, a3 = 0.04;
 
-    // Flatten slightly on one side for the natural seam ridge
-    if (z > 0) z *= 0.88;
+    const bump =
+      Math.sin(nx * f1 * Math.PI + 0.7) *
+        Math.cos(ny * f1 * Math.PI + 1.2) *
+        Math.sin(nz * f1 * Math.PI) *
+        a1 +
+      Math.sin(nx * f2 * Math.PI + 2.1) *
+        Math.cos(nz * f2 * Math.PI + 0.5) *
+        a2 +
+      Math.cos(ny * f3 * Math.PI + 3.3) *
+        Math.sin(nx * f3 * Math.PI + 1.8) *
+        a3;
 
-    // Subtle organic surface noise for imperfection
-    const noise =
-      Math.sin(x * 9 + y * 6) * 0.012 + Math.cos(z * 8 + y * 4) * 0.009;
-    x += noise * taper;
-    z += noise * taper;
-
-    pos.setXYZ(i, x, y, z);
+    // Gentle vertical elongation (natural bud silhouette)
+    const elongY = 1.18;
+    const r = 1 + bump;
+    pos.setXYZ(i, nx * r, ny * elongY * r, nz * r);
   }
 
   geo.computeVertexNormals();
   return geo;
 }
 
-/* ---------- Procedural textures — Californian Orange palette ---------- */
+/* ---------- Diffuse texture — deep forest green with orange pistils + trichomes ---------- */
 function createDiffuseMap() {
   const canvas = document.createElement("canvas");
   canvas.width = 1024;
   canvas.height = 1024;
   const ctx = canvas.getContext("2d")!;
 
-  // Base: warm amber-brown — Californian Orange palette
-  ctx.fillStyle = "#3b1c06";
+  // Base: deep forest green
+  ctx.fillStyle = "#192c09";
   ctx.fillRect(0, 0, 1024, 1024);
 
-  // Radial depth gradient: golden centre, dark edges
-  const radial = ctx.createRadialGradient(512, 400, 60, 512, 512, 530);
-  radial.addColorStop(0, "rgba(140,72,18,0.45)");
-  radial.addColorStop(0.55, "rgba(90,38,8,0.30)");
-  radial.addColorStop(1, "rgba(8,3,0,0.55)");
-  ctx.fillStyle = radial;
-  ctx.fillRect(0, 0, 1024, 1024);
-
-  // Tiger stripes — warm orange/amber wavy bands (hue 15–32)
-  for (let i = 0; i < 55; i++) {
+  // Lighter green calyx patches
+  for (let i = 0; i < 120; i++) {
     ctx.save();
-    ctx.globalAlpha = 0.12 + Math.random() * 0.24;
-    const hue = 15 + Math.random() * 17;
-    const sat = 50 + Math.random() * 25;
-    const lum = 30 + Math.random() * 24;
-    ctx.strokeStyle = `hsl(${hue},${sat}%,${lum}%)`;
-    ctx.lineWidth = 1.5 + Math.random() * 7;
+    ctx.globalAlpha = 0.14 + Math.random() * 0.28;
+    const hue = 88 + Math.random() * 38;
+    const sat = 38 + Math.random() * 28;
+    const lum = 18 + Math.random() * 22;
+    ctx.fillStyle = `hsl(${hue},${sat}%,${lum}%)`;
     ctx.beginPath();
+    ctx.ellipse(
+      Math.random() * 1024,
+      Math.random() * 1024,
+      18 + Math.random() * 75,
+      12 + Math.random() * 55,
+      Math.random() * Math.PI,
+      0,
+      Math.PI * 2,
+    );
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Purple-blue genetic undertones (some strains have purple hues)
+  for (let i = 0; i < 30; i++) {
+    ctx.save();
+    ctx.globalAlpha = 0.06 + Math.random() * 0.12;
+    ctx.fillStyle = `hsl(${260 + Math.random() * 30},40%,${20 + Math.random() * 15}%)`;
+    ctx.beginPath();
+    ctx.ellipse(
+      Math.random() * 1024,
+      Math.random() * 1024,
+      30 + Math.random() * 100,
+      20 + Math.random() * 70,
+      Math.random() * Math.PI,
+      0,
+      Math.PI * 2,
+    );
+    ctx.fill();
+    ctx.restore();
+  }
+
+  // Orange/rust pistil hairs — curvy organic strands
+  for (let i = 0; i < 200; i++) {
+    ctx.save();
+    ctx.globalAlpha = 0.55 + Math.random() * 0.45;
+    const hue = 18 + Math.random() * 22;
+    const lum = 38 + Math.random() * 22;
+    ctx.strokeStyle = `hsl(${hue},82%,${lum}%)`;
+    ctx.lineWidth = 0.8 + Math.random() * 2.8;
+    ctx.lineCap = "round";
+
     const sx = Math.random() * 1024;
-    ctx.moveTo(sx, 0);
-    for (let yy = 0; yy <= 1024; yy += 16) {
-      ctx.lineTo(sx + Math.sin(yy * 0.012 + i * 1.3) * 28, yy);
-    }
+    const sy = Math.random() * 1024;
+    const ex = sx + (Math.random() - 0.5) * 90;
+    const ey = sy + (Math.random() - 0.5) * 90;
+
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.bezierCurveTo(
+      sx + (Math.random() - 0.5) * 55,
+      sy + (Math.random() - 0.5) * 55,
+      ex + (Math.random() - 0.5) * 45,
+      ey + (Math.random() - 0.5) * 45,
+      ex,
+      ey,
+    );
     ctx.stroke();
     ctx.restore();
   }
 
-  // Speckle noise — warm orange-copper grain
-  for (let i = 0; i < 7000; i++) {
-    const r = 90 + Math.random() * 80;
-    const g = 35 + Math.random() * 40;
-    const b = 4 + Math.random() * 16;
-    ctx.fillStyle = `rgba(${r},${g},${b},${0.12 + Math.random() * 0.22})`;
+  // White trichome crystal coating — dense micro-dots
+  for (let i = 0; i < 22000; i++) {
+    const alpha = 0.04 + Math.random() * 0.18;
+    // Slight warmth in trichomes (cream/white)
+    const brightness = 220 + Math.floor(Math.random() * 35);
+    ctx.fillStyle = `rgba(${brightness},${brightness},${brightness - 10},${alpha})`;
     const px = Math.random() * 1024;
     const py = Math.random() * 1024;
-    const ps = 1 + Math.random() * 3.5;
-    ctx.fillRect(px, py, ps, ps);
+    const pr = 0.4 + Math.random() * 1.8;
+    ctx.beginPath();
+    ctx.arc(px, py, pr, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Larger glinting trichome heads
+  for (let i = 0; i < 400; i++) {
+    ctx.save();
+    ctx.globalAlpha = 0.35 + Math.random() * 0.55;
+    ctx.fillStyle = `rgba(255,252,245,${0.5 + Math.random() * 0.5})`;
+    ctx.beginPath();
+    ctx.arc(Math.random() * 1024, Math.random() * 1024, 1.2 + Math.random() * 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   }
 
   const tex = new THREE.CanvasTexture(canvas);
@@ -94,61 +156,114 @@ function createDiffuseMap() {
   return tex;
 }
 
+/* ---------- Roughness map — trichome peaks are slightly glossy ---------- */
 function createRoughnessMap() {
   const canvas = document.createElement("canvas");
   canvas.width = 512;
   canvas.height = 512;
   const ctx = canvas.getContext("2d")!;
-  ctx.fillStyle = "#818181";
+
+  // High roughness base (matte green bud surface)
+  ctx.fillStyle = "#999999";
   ctx.fillRect(0, 0, 512, 512);
-  for (let i = 0; i < 280; i++) {
-    const alpha = Math.random() * 0.35;
-    ctx.fillStyle = `rgba(${120 + Math.floor(Math.random() * 40)},${120 + Math.floor(Math.random() * 40)},${120 + Math.floor(Math.random() * 40)},${alpha})`;
+
+  // Slightly smoother patches (trichome heads catch light)
+  for (let i = 0; i < 500; i++) {
+    ctx.save();
+    ctx.globalAlpha = Math.random() * 0.45;
+    const v = 60 + Math.floor(Math.random() * 50);
+    ctx.fillStyle = `rgb(${v},${v},${v})`;
     ctx.beginPath();
-    ctx.ellipse(
-      Math.random() * 512,
-      Math.random() * 512,
-      4 + Math.random() * 18,
-      2 + Math.random() * 8,
-      Math.random() * Math.PI,
-      0,
-      Math.PI * 2,
-    );
+    ctx.arc(Math.random() * 512, Math.random() * 512, 1 + Math.random() * 6, 0, Math.PI * 2);
     ctx.fill();
+    ctx.restore();
   }
+
   return new THREE.CanvasTexture(canvas);
 }
 
+/* ---------- Normal map — surface micro-bumps ---------- */
 function createNormalMap() {
   const canvas = document.createElement("canvas");
   canvas.width = 512;
   canvas.height = 512;
   const ctx = canvas.getContext("2d")!;
+
   ctx.fillStyle = "#8080ff";
   ctx.fillRect(0, 0, 512, 512);
-  for (let i = 0; i < 1200; i++) {
-    const dr = Math.floor((Math.random() - 0.5) * 24);
-    const dg = Math.floor((Math.random() - 0.5) * 24);
+
+  for (let i = 0; i < 2000; i++) {
+    const dr = Math.floor((Math.random() - 0.5) * 40);
+    const dg = Math.floor((Math.random() - 0.5) * 40);
     ctx.fillStyle = `rgb(${128 + dr},${128 + dg},255)`;
     ctx.beginPath();
-    ctx.arc(
-      Math.random() * 512,
-      Math.random() * 512,
-      1 + Math.random() * 4,
-      0,
-      Math.PI * 2,
-    );
+    ctx.arc(Math.random() * 512, Math.random() * 512, 0.8 + Math.random() * 5, 0, Math.PI * 2);
     ctx.fill();
   }
+
   return new THREE.CanvasTexture(canvas);
 }
 
-/* ========== Main Hero Seed ========== */
+/* ---------- Trichome stalk particles — tiny stalks around the bud ---------- */
+function TrichomeParticles() {
+  const count = 600;
+  const { positions, colors } = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
+
+    for (let i = 0; i < count; i++) {
+      // Distribute on sphere surface + slight outward offset
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = 1.05 + Math.random() * 0.22;
+
+      pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta) * 1.18;
+      pos[i * 3 + 2] = r * Math.cos(phi);
+
+      // Mostly white/cream, some orange (pistils)
+      const isPistil = Math.random() < 0.15;
+      if (isPistil) {
+        // Orange pistil tip
+        col[i * 3] = 0.85 + Math.random() * 0.15;
+        col[i * 3 + 1] = 0.35 + Math.random() * 0.25;
+        col[i * 3 + 2] = 0.05;
+      } else {
+        // White/cream trichome
+        const v = 0.88 + Math.random() * 0.12;
+        col[i * 3] = v;
+        col[i * 3 + 1] = v;
+        col[i * 3 + 2] = v * 0.96;
+      }
+    }
+
+    return { positions: pos, colors: col };
+  }, []);
+
+  return (
+    <points>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" array={positions} count={count} itemSize={3} />
+        <bufferAttribute attach="attributes-color" array={colors} count={count} itemSize={3} />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.028}
+        vertexColors
+        transparent
+        opacity={0.88}
+        sizeAttenuation
+        depthWrite={false}
+      />
+    </points>
+  );
+}
+
+/* ========== Main Hero Bud ========== */
 export function SeedModel() {
   const meshRef = useRef<THREE.Mesh>(null!);
   const glowRef = useRef<THREE.Mesh>(null!);
 
-  const geometry = useMemo(createSeedGeometry, []);
+  const geometry = useMemo(createBudGeometry, []);
   const diffuseMap = useMemo(createDiffuseMap, []);
   const roughnessMap = useMemo(createRoughnessMap, []);
   const normalMap = useMemo(createNormalMap, []);
@@ -157,54 +272,64 @@ export function SeedModel() {
     if (!meshRef.current) return;
     const t = state.clock.elapsedTime;
 
-    // Smooth rotation
-    meshRef.current.rotation.y = t * 0.18;
-    meshRef.current.rotation.x = Math.sin(t * 0.28) * 0.12;
+    // Slow Y rotation — showcase the bud from all angles
+    meshRef.current.rotation.y = t * 0.14;
+    meshRef.current.rotation.x = Math.sin(t * 0.22) * 0.09;
 
-    // Floating bob
-    meshRef.current.position.y = Math.sin(t * 0.5) * 0.09;
+    // Subtle floating bob
+    meshRef.current.position.y = Math.sin(t * 0.45) * 0.08;
 
-    // Subtle breathing scale
-    const breathe = 1 + Math.sin(t * 0.6) * 0.015;
-    meshRef.current.scale.setScalar(0.72 * breathe);
+    // Breathing scale
+    const breathe = 1 + Math.sin(t * 0.55) * 0.012;
+    meshRef.current.scale.setScalar(0.78 * breathe);
 
-    // Pulsing glow aura
+    // Pulsing green glow
     if (glowRef.current) {
-      const glowScale = 0.78 + Math.sin(t * 0.8) * 0.04;
-      glowRef.current.scale.setScalar(glowScale);
+      const gs = 0.82 + Math.sin(t * 0.7) * 0.04;
+      glowRef.current.scale.setScalar(gs);
       (glowRef.current.material as THREE.MeshBasicMaterial).opacity =
-        0.08 + Math.sin(t * 0.6) * 0.04;
+        0.07 + Math.sin(t * 0.5) * 0.03;
     }
   });
 
   return (
     <group>
-      {/* Glow aura behind the seed */}
-      <mesh ref={glowRef} scale={0.78}>
-        <sphereGeometry args={[1.6, 32, 32]} />
-        <meshBasicMaterial color="#0bc38f" transparent opacity={0.08} side={THREE.BackSide} />
+      {/* Soft green ambient glow behind the bud */}
+      <mesh ref={glowRef} scale={0.82}>
+        <sphereGeometry args={[1.7, 32, 32]} />
+        <meshBasicMaterial
+          color="#1c7a2a"
+          transparent
+          opacity={0.07}
+          side={THREE.BackSide}
+        />
       </mesh>
 
-      {/* Main seed */}
-      <mesh ref={meshRef} geometry={geometry} scale={0.72} rotation={[0.28, 0, 0.08]}>
+      {/* Main cannabis bud */}
+      <mesh ref={meshRef} geometry={geometry} scale={0.78} rotation={[0.2, 0.4, 0.06]}>
         <meshPhysicalMaterial
           map={diffuseMap}
           normalMap={normalMap}
-          normalScale={new THREE.Vector2(0.35, 0.35)}
+          normalScale={new THREE.Vector2(0.55, 0.55)}
           roughnessMap={roughnessMap}
-          roughness={0.52}
-          metalness={0.04}
-          clearcoat={0.32}
-          clearcoatRoughness={0.38}
-          envMapIntensity={0.65}
-          color="#5e2a08"
+          roughness={0.72}
+          metalness={0.0}
+          clearcoat={0.18}
+          clearcoatRoughness={0.55}
+          envMapIntensity={0.5}
+          color="#2a4a10"
         />
       </mesh>
+
+      {/* Trichome + pistil particles around the bud */}
+      <group scale={0.78} rotation={[0.2, 0, 0.06]}>
+        <TrichomeParticles />
+      </group>
     </group>
   );
 }
 
-/* ========== Mini floating seed for featured sections ========== */
+/* ========== Mini floating bud for decorative sections ========== */
 export function MiniSeed({
   position = [0, 0, 0] as [number, number, number],
   scale = 0.3,
@@ -217,17 +342,17 @@ export function MiniSeed({
   rotationOffset?: number;
 }) {
   const meshRef = useRef<THREE.Mesh>(null!);
-  const geometry = useMemo(createSeedGeometry, []);
+  const geometry = useMemo(createBudGeometry, []);
   const diffuseMap = useMemo(createDiffuseMap, []);
 
   useFrame((state) => {
     if (!meshRef.current) return;
     const t = state.clock.elapsedTime * speed;
 
-    meshRef.current.rotation.y = t * 0.25 + rotationOffset;
-    meshRef.current.rotation.x = Math.sin(t * 0.3 + rotationOffset) * 0.15;
+    meshRef.current.rotation.y = t * 0.2 + rotationOffset;
+    meshRef.current.rotation.x = Math.sin(t * 0.3 + rotationOffset) * 0.12;
     meshRef.current.position.y =
-      position[1] + Math.sin(t * 0.4 + rotationOffset) * 0.12;
+      position[1] + Math.sin(t * 0.4 + rotationOffset) * 0.1;
   });
 
   return (
@@ -240,12 +365,12 @@ export function MiniSeed({
     >
       <meshPhysicalMaterial
         map={diffuseMap}
-        roughness={0.55}
-        metalness={0.03}
-        clearcoat={0.25}
-        clearcoatRoughness={0.4}
-        envMapIntensity={0.5}
-        color="#5e2a08"
+        roughness={0.72}
+        metalness={0.0}
+        clearcoat={0.15}
+        clearcoatRoughness={0.55}
+        envMapIntensity={0.4}
+        color="#2a4a10"
       />
     </mesh>
   );
