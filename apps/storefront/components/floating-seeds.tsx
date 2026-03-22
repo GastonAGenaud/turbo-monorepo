@@ -31,7 +31,15 @@ export function FloatingSeeds() {
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    if (prefersReduced) setShouldRender(false);
+
+    // Detect WebGL availability before mounting Canvas to avoid async error loops.
+    const testCanvas = document.createElement("canvas");
+    const gl =
+      testCanvas.getContext("webgl") ||
+      testCanvas.getContext("experimental-webgl");
+    const noWebGL = !gl;
+
+    if (prefersReduced || noWebGL) setShouldRender(false);
   }, []);
 
   if (!shouldRender) return null;

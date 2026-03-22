@@ -12,8 +12,12 @@ export default function HeroSeedScene() {
       <Canvas
         camera={{ position: [0, 0.25, 3.6], fov: 34 }}
         dpr={[1, 1.5]}
-        gl={{ antialias: true, alpha: true }}
+        gl={{ antialias: true, alpha: true, failIfMajorPerformanceCaveat: false }}
         style={{ background: "transparent", width: "100%", height: "100%" }}
+        onCreated={({ gl }) => {
+          // If the renderer somehow initialised but GL is broken, bail out.
+          if (!gl.getContext()) throw new Error("WebGL context unavailable");
+        }}
       >
         {/* Studio lighting tuned for Californian Orange warm amber palette */}
         <ambientLight intensity={0.22} />

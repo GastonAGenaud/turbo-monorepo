@@ -43,7 +43,18 @@ export function Hero3D() {
     const prefersReduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    if (prefersReduced) setShouldRender3D(false);
+
+    // Detect WebGL availability synchronously before mounting the Canvas.
+    // When the browser sandboxes/disables the GPU (GL_VENDOR = Disabled),
+    // getContext("webgl") returns null and we fall back to the static image
+    // instead of letting R3F spin in an infinite async error loop.
+    const testCanvas = document.createElement("canvas");
+    const gl =
+      testCanvas.getContext("webgl") ||
+      testCanvas.getContext("experimental-webgl");
+    const noWebGL = !gl;
+
+    if (prefersReduced || noWebGL) setShouldRender3D(false);
   }, []);
 
   if (!shouldRender3D) return <Fallback />;
