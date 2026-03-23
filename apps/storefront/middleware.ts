@@ -16,7 +16,13 @@ export function middleware(request: NextRequest) {
   });
   response.headers.set(
     "Content-Security-Policy",
-    "default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval';",
+    [
+      "default-src 'self'",
+      "img-src 'self' https: data:",
+      "style-src 'self' 'unsafe-inline'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "frame-src 'self' https://sketchfab.com https://*.sketchfab.com",
+    ].join("; "),
   );
 
   return response;

@@ -5,7 +5,6 @@ export function SketchfabHero() {
         title="SOUTH PARK Tegridy Weed from Tegridy Farms"
         className="h-full w-full"
         frameBorder="0"
-        allowFullScreen
         allow="autoplay; fullscreen; xr-spatial-tracking; web-share"
         src="https://sketchfab.com/models/68395f8ce9714bf2823c5cdbd31135d2/embed"
       />
