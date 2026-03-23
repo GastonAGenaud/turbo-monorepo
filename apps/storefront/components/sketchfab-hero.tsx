@@ -1,4 +1,7 @@
 export function SketchfabHero() {
+  const src =
+    "https://sketchfab.com/models/68395f8ce9714bf2823c5cdbd31135d2/embed?autostart=1&ui_stop=0&autospin=0.2";
+
   return (
     <div className="relative h-full min-h-[540px] w-full overflow-hidden bg-[color:var(--card-strong)]">
       <iframe
@@ -6,7 +9,7 @@ export function SketchfabHero() {
         className="h-full w-full"
         frameBorder="0"
         allow="autoplay; fullscreen; xr-spatial-tracking; web-share"
-        src="https://sketchfab.com/models/68395f8ce9714bf2823c5cdbd31135d2/embed"
+        src={src}
       />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(7,9,13,0.12),rgba(7,9,13,0.62)_90%)]" />
       <div className="absolute bottom-4 left-4 right-4 rounded-[20px] border border-[var(--line)] bg-[color:var(--card)]/78 p-3 backdrop-blur-md">
