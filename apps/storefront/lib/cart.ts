@@ -30,3 +30,16 @@ export async function syncCart(userId: string, items: Array<{ productId: string;
     },
   });
 }
+
+export async function getCart(userId: string) {
+  return db.cart.findUnique({
+    where: { userId },
+    include: {
+      items: {
+        include: {
+          product: true,
+        },
+      },
+    },
+  });
+}

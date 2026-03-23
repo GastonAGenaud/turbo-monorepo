@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button, Card, CardContent } from "@ggseeds/ui";
 
 import { useCart } from "./cart-provider";
+import { extractProductsArray } from "../lib/cart-client";
 
 interface ProductSnapshot {
   id: string;
@@ -27,7 +28,7 @@ export function CartPageClient() {
     const ids = items.map((item: any) => item.productId).join(",");
     void fetch(`/api/products?ids=${ids}`)
       .then((response) => response.json())
-      .then((body) => setProducts(body.items ?? []));
+      .then((body) => setProducts(extractProductsArray<ProductSnapshot>(body)));
   }, [items]);
 
   const rows = items

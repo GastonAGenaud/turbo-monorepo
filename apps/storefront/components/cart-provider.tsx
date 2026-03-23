@@ -3,10 +3,13 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useSession } from "next-auth/react";
 
-interface CartItem {
-  productId: string;
-  quantity: number;
-}
+import {
+  type ClientCartItem,
+  mergeCartItems,
+  normalizeCartItems,
+} from "../lib/cart-client";
+
+interface CartItem extends ClientCartItem {}
 
 interface CartContextValue {
   items: CartItem[];
@@ -30,30 +33,63 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [lastAdded, setLastAdded] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [storageHydrated, setStorageHydrated] = useState(false);
+  const [serverHydrated, setServerHydrated] = useState(false);
 
   useEffect(() => {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      try {
-        setItems(JSON.parse(raw));
-      } catch {
-        setItems([]);
-      }
+    try {
+      setItems(normalizeCartItems(raw ? JSON.parse(raw) : []));
+    } catch {
+      setItems([]);
     }
+    setStorageHydrated(true);
   }, []);
 
   useEffect(() => {
+    if (!storageHydrated) return;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  }, [items]);
+  }, [items, storageHydrated]);
 
   useEffect(() => {
-    if (!data?.user || items.length === 0) return;
+    if (!storageHydrated) return;
+
+    if (!data?.user) {
+      setServerHydrated(true);
+      return;
+    }
+
+    setServerHydrated(false);
+
+    let cancelled = false;
+
+    void fetch("/api/cart/sync")
+      .then((response) => (response.ok ? response.json() : { items: [] }))
+      .then((payload) => {
+        if (cancelled) return;
+
+        const remoteItems = normalizeCartItems(payload.items);
+        setItems((current) => mergeCartItems(current, remoteItems));
+        setServerHydrated(true);
+      })
+      .catch(() => {
+        if (!cancelled) setServerHydrated(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [data?.user, storageHydrated]);
+
+  useEffect(() => {
+    if (!data?.user || !storageHydrated || !serverHydrated) return;
+
     void fetch("/api/cart/sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ items }),
     });
-  }, [data?.user, items]);
+  }, [data?.user, items, storageHydrated, serverHydrated]);
 
   const value = useMemo<CartContextValue>(
     () => ({
@@ -62,7 +98,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setItems((prev) => {
           const existing = prev.find((item) => item.productId === productId);
           if (existing) {
-            return prev.map((item: any) =>
+            return prev.map((item) =>
               item.productId === productId
                 ? { ...item, quantity: item.quantity + quantity }
                 : item,
@@ -80,7 +116,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       setQuantity: (productId: string, quantity: number) => {
         setItems((prev) =>
           prev
-            .map((item: any) =>
+            .map((item) =>
               item.productId === productId ? { ...item, quantity } : item,
             )
             .filter((item) => item.quantity > 0),

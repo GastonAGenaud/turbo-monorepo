@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 
 import { authOptions } from "../../../../lib/auth";
-import { syncCart } from "../../../../lib/cart";
+import { getCart, syncCart } from "../../../../lib/cart";
 
 const schema = z.object({
   items: z.array(
@@ -28,4 +28,22 @@ export async function POST(request: Request) {
 
   const cart = await syncCart(session.user.id, payload.data.items);
   return NextResponse.json({ ok: true, cart });
+}
+
+export async function GET() {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user) {
+    return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+  }
+
+  const cart = await getCart(session.user.id);
+
+  return NextResponse.json({
+    ok: true,
+    items: (cart?.items ?? []).map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+    })),
+  });
 }

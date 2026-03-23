@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { ArrowRight, Clock3, MapPin, MessageCircle, ShieldCheck, Sparkles, Truck } from "lucide-react";
 
-import { ADMIN_WHATSAPP_DISPLAY, buildWhatsAppUrl } from "@ggseeds/shared";
+import { ADMIN_WHATSAPP_DISPLAY } from "@ggseeds/shared";
 import { Button } from "@ggseeds/ui";
 
-import { FloatingSeeds } from "../components/floating-seeds";
-import { Hero3D } from "../components/hero-3d";
 import { ProductCard } from "../components/product-card";
+import { SketchfabHero } from "../components/sketchfab-hero";
 import { AMSTERDAM_STORY_IMAGE, CATEGORY_COPY, LEGAL_BULLETS, maskBrand } from "../lib/brand";
 import { getHomeData } from "../lib/catalog";
 
@@ -87,7 +86,7 @@ export default async function HomePage() {
         </div>
 
         <div className="ambient-border relative overflow-hidden rounded-[32px] border border-[var(--line)] bg-[color:var(--card-strong)]">
-          <Hero3D />
+          <SketchfabHero />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(7,9,13,0.08),rgba(7,9,13,0.55)_85%)] dark:bg-[linear-gradient(180deg,rgba(7,9,13,0.08),rgba(7,9,13,0.55)_85%)]" />
           {heroProduct ? (
             <div className="absolute bottom-5 left-5 right-5 rounded-[24px] border border-[var(--line)] bg-[color:var(--card)]/85 p-4 backdrop-blur-md">
@@ -148,7 +147,6 @@ export default async function HomePage() {
       </section>
 
       <section id="catalogo" className="relative space-y-10 overflow-hidden rounded-[36px] border border-[var(--line)] bg-[color:var(--card)]/60 px-4 py-10 md:px-8 md:py-14">
-        <FloatingSeeds />
         <div className="relative space-y-4 text-center">
           <p className="section-kicker">Catálogo premium</p>
           <h2 className="font-serif-display text-4xl md:text-5xl">Novedades en stock</h2>

@@ -41,7 +41,7 @@ function interleaveByBrand<T extends { brand: string | null; finalPrice: unknown
 }
 
 export async function getHomeData() {
-  const [categories, products, heroProduct] = await Promise.all([
+  const [categories, products, preferredHeroProduct] = await Promise.all([
     db.category.findMany({
       take: 6,
       orderBy: { name: "asc" },
@@ -70,6 +70,14 @@ export async function getHomeData() {
       include: { category: true },
     }),
   ]);
+
+  const heroProduct =
+    preferredHeroProduct ??
+    (await db.product.findFirst({
+      where: { isActive: true },
+      orderBy: { createdAt: "desc" },
+      include: { category: true },
+    }));
 
   return { categories, products, heroProduct };
 }

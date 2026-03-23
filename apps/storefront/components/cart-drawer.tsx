@@ -9,6 +9,7 @@ import { buildWhatsAppUrl } from "@ggseeds/shared";
 
 import { useCart } from "./cart-provider";
 import { maskBrand } from "../lib/brand";
+import { extractProductsArray } from "../lib/cart-client";
 
 interface ProductSnapshot {
   id: string;
@@ -34,7 +35,7 @@ export function CartDrawer() {
     setLoading(true);
     fetch(`/api/products?ids=${ids}`)
       .then((r) => r.json())
-      .then((data) => setProducts(Array.isArray(data) ? data : []))
+      .then((data) => setProducts(extractProductsArray<ProductSnapshot>(data)))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, [drawerOpen, items]);
