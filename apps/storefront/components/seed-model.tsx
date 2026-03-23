@@ -141,8 +141,8 @@ function TrichomeParticles() {
   return (
     <points>
       <bufferGeometry>
-        <bufferAttribute attach="attributes-position" array={positions} count={count} itemSize={3} />
-        <bufferAttribute attach="attributes-color" array={colors} count={count} itemSize={3} />
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+        <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial size={0.028} vertexColors transparent opacity={0.88} sizeAttenuation depthWrite={false} />
     </points>
