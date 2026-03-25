@@ -40,10 +40,10 @@ export default async function OrdersPage() {
                 </p>
                 <OrderStatusSelect orderId={order.id} status={order.status} />
               </div>
-              <p className="text-xs text-[color:var(--muted)]">Cliente: {order.user?.email ?? order.email}</p>
+              <p className="text-xs text-[color:var(--muted)]">Cliente: {order.user?.email ?? order.email ?? "sin email"}</p>
               <p className="text-xs text-[color:var(--muted)]">Teléfono: {order.phone ?? "sin informar"}</p>
               <p className="text-xs text-[color:var(--muted)]">
-                Envío: {order.addressLine1}, {order.city} ({order.postalCode})
+                Envío: {[order.addressLine1, order.city, order.postalCode ? `(${order.postalCode})` : null].filter(Boolean).join(", ") || "a coordinar por WhatsApp"}
               </p>
               <ul className="mt-2 space-y-1 text-sm text-[color:var(--muted)]">
                 {order.items.map((item: any) => (

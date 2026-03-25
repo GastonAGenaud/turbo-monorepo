@@ -1,29 +1,60 @@
 import { z } from "zod";
 
+const trimmedString = (min: number, max: number) =>
+  z.preprocess(
+    (value) => (typeof value === "string" ? value.trim() : value),
+    z.string().min(min).max(max),
+  );
+
+const optionalTrimmedString = (max: number) =>
+  z.preprocess(
+    (value) => {
+      if (typeof value !== "string") return value;
+      const trimmed = value.trim();
+      return trimmed.length > 0 ? trimmed : null;
+    },
+    z.string().max(max).nullable().optional(),
+  );
+
+const optionalEmail = z.preprocess(
+  (value) => {
+    if (typeof value !== "string") return value;
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed.toLowerCase() : null;
+  },
+  z.string().email().nullable().optional(),
+);
+
 export const registerSchema = z.object({
-  name: z.string().min(2).max(120),
-  email: z.string().email(),
+  name: trimmedString(2, 120),
+  email: z.preprocess(
+    (value) => (typeof value === "string" ? value.trim().toLowerCase() : value),
+    z.string().email(),
+  ),
   password: z.string().min(8).max(72),
   captchaToken: z.string().min(16).max(2000),
   captchaAnswer: z.string().min(1).max(12),
-  website: z.string().max(200).optional().nullable(),
+  website: optionalTrimmedString(200),
 });
 
 export const loginSchema = z.object({
-  email: z.string().email(),
+  email: z.preprocess(
+    (value) => (typeof value === "string" ? value.trim().toLowerCase() : value),
+    z.string().email(),
+  ),
   password: z.string().min(8).max(72),
 });
 
 export const checkoutSchema = z.object({
-  fullName: z.string().min(2).max(120),
-  email: z.string().email(),
-  phone: z.string().max(32).optional().nullable(),
-  contactDetails: z.string().max(280).optional().nullable(),
-  addressLine1: z.string().min(4).max(180),
-  addressLine2: z.string().max(180).optional().nullable(),
-  city: z.string().min(2).max(120),
-  postalCode: z.string().min(3).max(12),
-  notes: z.string().max(500).optional().nullable(),
+  fullName: trimmedString(2, 120),
+  email: optionalEmail,
+  phone: trimmedString(8, 32),
+  contactDetails: optionalTrimmedString(280),
+  addressLine1: optionalTrimmedString(180),
+  addressLine2: optionalTrimmedString(180),
+  city: trimmedString(2, 120),
+  postalCode: optionalTrimmedString(12),
+  notes: optionalTrimmedString(500),
   items: z
     .array(
       z.object({

@@ -38,7 +38,7 @@ export default async function OrdersPage({
           <CardContent className="space-y-3 text-sm text-emerald-950 dark:text-emerald-100">
             <p>Tu pedido #{orderId.slice(0, 8)} ya quedó registrado.</p>
             <p>
-              Ahora coordinamos pago y envío por WhatsApp con administración en{" "}
+              En el siguiente paso coordinamos pago, envío o retiro por WhatsApp con el equipo de GGseeds en{" "}
               <a href={buildWhatsAppUrl(buildCheckoutWhatsAppMessage(orderId))} target="_blank" rel="noreferrer" className="font-medium underline">
                 {ADMIN_WHATSAPP_DISPLAY}
               </a>

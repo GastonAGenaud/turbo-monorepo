@@ -88,7 +88,7 @@ export function StoreNavbar() {
           >
             <a href={buildWhatsAppUrl()} target="_blank" rel="noreferrer">
               <MessageCircle className="mr-2 h-4 w-4" />
-              WhatsApp
+              Hablar por WhatsApp
             </a>
           </Button>
 

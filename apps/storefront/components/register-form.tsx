@@ -63,7 +63,7 @@ export function RegisterForm() {
 
         if (!response.ok) {
           const body = await response.json().catch(() => null);
-          setError(body?.error ?? "No se pudo crear la cuenta");
+          setError(body?.error ?? "No pudimos crear la cuenta. Probá nuevamente o escribinos por WhatsApp.");
           await loadCaptcha();
           return;
         }
@@ -72,16 +72,24 @@ export function RegisterForm() {
       }}
     >
       <div>
-        <Label htmlFor="name">Nombre</Label>
-        <Input id="name" name="name" required />
+        <Label htmlFor="name">Nombre y apellido</Label>
+        <Input id="name" name="name" placeholder="Como querés que te identifiquemos" autoComplete="name" required />
       </div>
       <div>
         <Label htmlFor="email">Email</Label>
-        <Input id="email" name="email" type="email" required />
+        <Input id="email" name="email" type="email" placeholder="tu@email.com" autoComplete="email" required />
       </div>
       <div>
         <Label htmlFor="password">Contraseña</Label>
-        <Input id="password" name="password" type="password" required minLength={8} />
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          required
+          minLength={8}
+          placeholder="Mínimo 8 caracteres"
+          autoComplete="new-password"
+        />
       </div>
 
       <div className="absolute left-[-9999px] top-auto h-0 w-0 overflow-hidden opacity-0">
@@ -94,10 +102,10 @@ export function RegisterForm() {
           <div>
             <p className="flex items-center gap-2 text-sm font-medium">
               <ShieldCheck className="h-4 w-4 text-[color:var(--accent)]" />
-              Verificación humana
+              Verificación rápida
             </p>
             <p className="mt-1 text-sm text-[color:var(--muted)]">
-              {captchaLoading ? "Generando desafío..." : captcha?.prompt ?? "No se pudo generar el captcha."}
+              {captchaLoading ? "Preparando desafío..." : captcha?.prompt ?? "No se pudo generar la verificación."}
             </p>
           </div>
           <button
@@ -117,7 +125,7 @@ export function RegisterForm() {
       </div>
 
       <Button type="submit" className="w-full rounded-full" disabled={loading || captchaLoading || !captcha}>
-        {loading ? "Creando..." : "Crear cuenta"}
+        {loading ? "Creando cuenta..." : "Crear cuenta segura"}
       </Button>
 
       {error ? <p className="text-sm text-rose-400">{error}</p> : null}

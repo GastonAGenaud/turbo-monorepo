@@ -26,5 +26,5 @@ export function maskBrand(brand: string | null | undefined): string | null {
 export const LEGAL_BULLETS = [
   "Venta exclusiva para mayores de 18 años.",
   "Semillas destinadas a coleccionismo y preservación genética.",
-  "Pago y envío coordinados directamente por WhatsApp.",
+  "Pago, envío o retiro coordinados directamente por WhatsApp.",
 ];

@@ -30,7 +30,7 @@ export function LoginForm() {
         setLoading(false);
 
         if (result?.error) {
-          setError("Credenciales inválidas");
+          setError("No pudimos validar esos datos. Revisalos o escribinos por WhatsApp si necesitás ayuda.");
           return;
         }
 
@@ -40,15 +40,15 @@ export function LoginForm() {
     >
       <div>
         <Label htmlFor="email">Email</Label>
-        <Input id="email" name="email" type="email" required />
+        <Input id="email" name="email" type="email" placeholder="tu@email.com" autoComplete="email" required />
       </div>
       <div>
         <Label htmlFor="password">Contraseña</Label>
-        <Input id="password" name="password" type="password" required />
+        <Input id="password" name="password" type="password" placeholder="Tu contraseña" autoComplete="current-password" required />
       </div>
 
       <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Ingresando..." : "Ingresar"}
+        {loading ? "Ingresando..." : "Entrar a mi cuenta"}
       </Button>
 
       {error ? <p className="text-sm text-rose-400">{error}</p> : null}

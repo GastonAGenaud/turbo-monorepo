@@ -85,7 +85,9 @@ Estas migraciones alinean la base productiva con el schema actual de Prisma para
 - popup legal de mayoría de edad persistente y ajustado para mobile
 - registro con captcha matemático firmado por servidor
 - admin con shell, login y vistas principales rediseñadas para mayor claridad operativa
-- checkout con campo opcional de contacto adicional persistido dentro de la orden
+- checkout simplificado: nombre, WhatsApp y zona como núcleo; email y dirección exacta opcionales
+- CTA directos a WhatsApp en login, registro, carrito y checkout
+- copy del storefront ajustado para un tono más humano y profesional
 
 ## Levantar local
 

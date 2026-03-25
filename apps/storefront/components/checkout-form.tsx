@@ -45,14 +45,14 @@ export function CheckoutForm() {
 
     if (!response.ok) {
       const body = await response.json().catch(() => null);
-      setMessage(body?.error ?? "No se pudo crear la orden");
+      setMessage(body?.error ?? "No pudimos registrar tu pedido. Probá de nuevo o escribinos por WhatsApp.");
       setLoading(false);
       return;
     }
 
     const body = await response.json();
     clear();
-    setMessage(`Orden creada: ${body.orderId}. Te abrimos WhatsApp para coordinar pago y envío.`);
+    setMessage(`Pedido ${body.orderId.slice(0, 8)} recibido. Te abrimos WhatsApp para coordinar pago, envío o retiro.`);
     setLoading(false);
     window.open(buildWhatsAppUrl(buildCheckoutWhatsAppMessage(body.orderId)), "_blank", "noopener,noreferrer");
     router.push(`/pedidos?orderId=${body.orderId}`);
@@ -66,61 +66,70 @@ export function CheckoutForm() {
       }}
     >
       <div className="glass-panel rounded-[28px] p-4 text-sm text-[color:var(--muted)]">
-        <p className="font-medium text-[color:var(--fg)]">Pago coordinado con administración</p>
+        <p className="font-medium text-[color:var(--fg)]">Te pedimos solo lo necesario para avanzar.</p>
         <p className="mt-2">{MANUAL_PAYMENT_COPY}</p>
         <p className="mt-1">{SHIPPING_COPY}</p>
         <p className="mt-1">
-          WhatsApp de contacto:{" "}
+          Si preferís resolver todo antes de enviar el pedido, podés escribirnos directo a{" "}
           <a href={buildWhatsAppUrl()} target="_blank" rel="noreferrer" className="text-[color:var(--accent)]">
             {ADMIN_WHATSAPP_DISPLAY}
           </a>
         </p>
       </div>
 
-      <div>
-        <Label htmlFor="fullName">Nombre completo</Label>
-        <Input id="fullName" name="fullName" required />
+      <div className="grid gap-4 md:grid-cols-2">
+        <div>
+          <Label htmlFor="fullName">Nombre y apellido</Label>
+          <Input id="fullName" name="fullName" placeholder="Como querés que te identifiquemos" autoComplete="name" required />
+        </div>
+        <div>
+          <Label htmlFor="phone">WhatsApp de contacto</Label>
+          <Input id="phone" name="phone" placeholder="+54 9 ..." autoComplete="tel" inputMode="tel" required />
+        </div>
       </div>
-      <div>
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" name="email" type="email" required />
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <div>
+          <Label htmlFor="city">Barrio o ciudad</Label>
+          <Input id="city" name="city" placeholder="Ej: Palermo, CABA / Córdoba capital" autoComplete="address-level2" required />
+        </div>
+        <div>
+          <Label htmlFor="email">Email para seguimiento</Label>
+          <Input id="email" name="email" type="email" placeholder="Opcional" autoComplete="email" />
+        </div>
       </div>
+
       <div>
-        <Label htmlFor="phone">Teléfono</Label>
-        <Input id="phone" name="phone" />
-      </div>
-      <div>
-        <Label htmlFor="contactDetails">Dato de contacto adicional</Label>
+        <Label htmlFor="contactDetails">Cómo preferís que coordinemos</Label>
         <Textarea
           id="contactDetails"
           name="contactDetails"
-          placeholder="Opcional: Instagram, alias, barrio, franja horaria o cualquier referencia útil para contactarte."
-          className="min-h-[92px]"
+          placeholder="Opcional: franja horaria, si preferís envío o retiro, Instagram, alias o una referencia útil."
+          className="min-h-[88px]"
         />
       </div>
+
       <div>
-        <Label htmlFor="addressLine1">Dirección</Label>
-        <Input id="addressLine1" name="addressLine1" required />
+        <Label htmlFor="addressLine1">Dirección exacta</Label>
+        <Input
+          id="addressLine1"
+          name="addressLine1"
+          placeholder="Opcional por ahora. Si querés, la coordinamos después por WhatsApp."
+          autoComplete="street-address"
+        />
       </div>
+
       <div>
-        <Label htmlFor="addressLine2">Depto/Piso</Label>
-        <Input id="addressLine2" name="addressLine2" />
-      </div>
-      <div>
-        <Label htmlFor="city">Ciudad</Label>
-        <Input id="city" name="city" defaultValue="CABA" required />
-      </div>
-      <div>
-        <Label htmlFor="postalCode">Código postal</Label>
-        <Input id="postalCode" name="postalCode" required />
-      </div>
-      <div>
-        <Label htmlFor="notes">Notas</Label>
-        <Textarea id="notes" name="notes" />
+        <Label htmlFor="notes">Mensaje para el equipo</Label>
+        <Textarea
+          id="notes"
+          name="notes"
+          placeholder="Opcional: consulta sobre stock, preferencia de envío o cualquier detalle que quieras aclarar."
+        />
       </div>
 
       <Button type="submit" className="rounded-full" disabled={loading || items.length === 0}>
-        {loading ? "Procesando..." : "Confirmar pedido y coordinar pago"}
+        {loading ? "Registrando pedido..." : "Enviar pedido y seguir por WhatsApp"}
       </Button>
 
       {message ? <p className="text-sm text-[color:var(--muted)]">{message}</p> : null}

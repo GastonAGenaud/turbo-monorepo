@@ -14,17 +14,17 @@ export default async function HomePage() {
   const highlights = [
     {
       title: "Stock real",
-      text: "Actualización diaria del catálogo para disponibilidad más confiable.",
+      text: "Actualizamos el catálogo para que consultes con una base más confiable antes de escribirnos.",
       icon: Clock3,
     },
     {
       title: "Colección curada",
-      text: "Genéticas premium seleccionadas por linaje, reputación y estabilidad.",
+      text: "Elegimos genéticas con criterio de banco, historia y consistencia, no por volumen.",
       icon: ShieldCheck,
     },
     {
-      title: "Despacho coordinado",
-      text: "Atención directa por WhatsApp para pago, envío y seguimiento.",
+      title: "Atención humana",
+      text: "Pago, envío y seguimiento coordinados por WhatsApp con una persona real.",
       icon: Truck,
     },
   ];
@@ -52,7 +52,7 @@ export default async function HomePage() {
                 Genéticas <span className="italic text-[color:var(--muted)]">premium</span> para coleccionistas.
               </h1>
               <p className="max-w-xl text-base leading-8 text-[color:var(--muted)]">
-                Curamos las mejores semillas del mercado para preservación genética. Calidad europea, stock actualizado y despacho local inmediato en CABA y envíos a todo el país.
+                Curamos semillas de bancos reconocidos para coleccionismo y preservación genética. Catálogo vivo, trato directo y coordinación simple desde CABA a todo el país.
               </p>
             </div>
 
@@ -114,7 +114,7 @@ export default async function HomePage() {
           <h2 className="font-serif-display text-4xl md:text-5xl">Categorías destacadas</h2>
         </div>
         <p className="max-w-lg self-end text-sm leading-7 text-[color:var(--muted)]">
-          Explorá una selección curada de genéticas europeas, clasificadas para ayudarte a encontrar la pieza ideal para tu colección sin perder contexto de origen, stock y pricing.
+          Explorá una selección pensada para que encuentres rápido la genética correcta, con contexto de origen, disponibilidad y atención real para resolver dudas antes de comprar.
         </p>
       </section>
 
@@ -189,7 +189,7 @@ export default async function HomePage() {
             De los canales de <span className="italic text-[color:var(--muted)]">Amsterdam</span> a tu colección.
           </h2>
           <p className="max-w-2xl text-lg leading-8 text-[color:var(--muted)]">
-            No somos solo una tienda de semillas. Somos apasionados por la botánica y la preservación. Cada genética en nuestro catálogo fue elegida por su historia, su vigor y su pureza.
+            No buscamos que compres rápido y a ciegas. Queremos que elijas bien. Cada genética del catálogo fue seleccionada por su historia, su estabilidad y la confianza que transmite su banco.
           </p>
 
           <div className="grid gap-3 rounded-[28px] border border-[var(--line)] bg-white/5 p-5 md:grid-cols-3">
@@ -211,7 +211,7 @@ export default async function HomePage() {
                 ))}
               </div>
               <p>
-                <span className="font-semibold text-[color:var(--fg)]">+500 coleccionistas</span> consultan cada mes por nuestro catálogo.
+                <span className="font-semibold text-[color:var(--fg)]">+500 coleccionistas</span> nos consultan cada mes para comparar opciones y coordinar compras.
               </p>
             </div>
             <div className="flex items-center gap-2">

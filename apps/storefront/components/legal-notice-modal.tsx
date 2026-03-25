@@ -47,7 +47,7 @@ export function LegalNoticeModal() {
             <div className="grid gap-3 rounded-[24px] border border-[var(--line)] bg-[color:var(--bg-soft)] p-4 text-sm text-[color:var(--muted)] sm:p-5 md:grid-cols-2">
               <p>{SHIPPING_COPY}</p>
               <p>
-                Atención directa por WhatsApp:{" "}
+                Atención humana por WhatsApp:{" "}
                 <a className="text-[color:var(--accent)]" href={buildWhatsAppUrl()} target="_blank" rel="noreferrer">
                   {ADMIN_WHATSAPP_DISPLAY}
                 </a>

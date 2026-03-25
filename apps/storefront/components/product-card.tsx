@@ -53,10 +53,10 @@ export function ProductCard({ product }: ProductCardProps) {
           <h3 className="font-serif-display text-2xl leading-tight text-[color:var(--fg)]">{product.name}</h3>
           <p className="text-sm leading-6 text-[color:var(--muted)]">
             {product.stockStatus === "UNKNOWN"
-              ? "Disponibilidad a confirmar por WhatsApp."
+              ? "La disponibilidad se confirma rápido por WhatsApp."
               : isAvailable
-                ? "Catálogo importado y actualizado para coordinación inmediata."
-                : "Producto visible para seguimiento y reingreso de stock."}
+                ? "Disponible para coordinar compra, envío o retiro con atención directa."
+                : "Lo dejamos visible para seguimiento y aviso de reingreso."}
           </p>
           <div className="border-t border-[var(--line)] pt-3">
             <p className="text-lg font-semibold text-[color:var(--fg)]">${product.finalPrice.toLocaleString("es-AR")}</p>

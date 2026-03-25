@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Instagram, MessageCircle, Send } from "lucide-react";
 
-import { ADMIN_WHATSAPP_DISPLAY, MANUAL_PAYMENT_COPY, SHIPPING_COPY, buildWhatsAppUrl } from "@ggseeds/shared";
+import { ADMIN_WHATSAPP_DISPLAY, SHIPPING_COPY, buildWhatsAppUrl } from "@ggseeds/shared";
 
 export function StoreFooter() {
   return (
@@ -12,7 +12,7 @@ export function StoreFooter() {
             GG<span className="text-[color:var(--accent)]">seeds</span>
           </p>
           <p className="max-w-sm leading-7 text-[color:var(--muted)]">
-            Inspirados por la cultura de Amsterdam, curamos las mejores genéticas de Europa con despacho coordinado en Buenos Aires y todo el país.
+            Inspirados por la cultura de Amsterdam, reunimos genéticas de bancos reconocidos con atención cercana, stock vivo y coordinación simple desde Buenos Aires.
           </p>
           <div className="flex gap-3 text-[color:var(--muted)]">
             <a href={buildWhatsAppUrl()} target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] p-2 transition hover:text-[color:var(--accent)]">
@@ -42,7 +42,7 @@ export function StoreFooter() {
           <div className="space-y-3 text-[color:var(--muted)]">
             <p>Mayores de 18 años</p>
             <p>Uso para preservación genética</p>
-            <p>{MANUAL_PAYMENT_COPY}</p>
+            <p>Compra asistida y confirmación final por WhatsApp.</p>
           </div>
         </div>
 
@@ -60,7 +60,7 @@ export function StoreFooter() {
 
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 border-t border-[var(--line)] px-4 py-5 text-xs text-[color:var(--muted)] md:px-6 lg:px-8">
         <p>© 2026 GGseeds. Todos los derechos reservados.</p>
-        <p>Catálogo vivo con stock importado y atención directa por WhatsApp.</p>
+        <p>Catálogo vivo, respuestas humanas y coordinación directa por WhatsApp.</p>
       </div>
     </footer>
   );

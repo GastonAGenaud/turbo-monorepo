@@ -3,6 +3,10 @@ import { ADMIN_WHATSAPP_DISPLAY, MANUAL_PAYMENT_COPY, SHIPPING_COPY, checkoutSch
 
 export async function createOrderFromCheckout(input: unknown, userId?: string) {
   const payload = checkoutSchema.parse(input);
+  const email = payload.email ?? "sin-email@ggseeds.local";
+  const addressLine1 = payload.addressLine1 ?? "A coordinar por WhatsApp";
+  const city = payload.city ?? "A coordinar";
+  const postalCode = payload.postalCode ?? "0000";
 
   const products = await db.product.findMany({
     where: {
@@ -40,15 +44,18 @@ export async function createOrderFromCheckout(input: unknown, userId?: string) {
       subtotal,
       total: subtotal,
       fullName: payload.fullName,
-      email: payload.email,
+      email,
       phone: payload.phone,
-      addressLine1: payload.addressLine1,
+      addressLine1,
       addressLine2: payload.addressLine2,
-      city: payload.city,
-      postalCode: payload.postalCode,
+      city,
+      postalCode,
       notes: [
-        payload.contactDetails ? `Datos de contacto adicionales: ${payload.contactDetails}` : null,
-        payload.notes,
+        `Contacto principal del cliente: ${payload.phone}.`,
+        payload.email ? `Email de seguimiento: ${payload.email}.` : "Sin email informado: seguimiento por WhatsApp.",
+        payload.contactDetails ? `Referencia útil para coordinar: ${payload.contactDetails}` : null,
+        payload.notes ? `Observaciones del cliente: ${payload.notes}` : null,
+        !payload.addressLine1 ? "Dirección exacta pendiente de coordinación por WhatsApp." : null,
         `${MANUAL_PAYMENT_COPY} ${SHIPPING_COPY} Contacto admin: ${ADMIN_WHATSAPP_DISPLAY}.`,
       ]
         .filter(Boolean)

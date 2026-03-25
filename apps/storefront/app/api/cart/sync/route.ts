@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 
+import { db } from "@ggseeds/db";
 import { authOptions } from "../../../../lib/auth";
 import { getCart, syncCart } from "../../../../lib/cart";
 
@@ -21,6 +22,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
 
+  const user = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { id: true },
+  });
+
+  if (!user) {
+    return NextResponse.json({ error: "Sesión inválida" }, { status: 401 });
+  }
+
   const payload = schema.safeParse(await request.json());
   if (!payload.success) {
     return NextResponse.json({ error: "Payload inválido" }, { status: 400 });
@@ -35,6 +45,15 @@ export async function GET() {
 
   if (!session?.user) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+  }
+
+  const user = await db.user.findUnique({
+    where: { id: session.user.id },
+    select: { id: true },
+  });
+
+  if (!user) {
+    return NextResponse.json({ ok: true, items: [] });
   }
 
   const cart = await getCart(session.user.id);

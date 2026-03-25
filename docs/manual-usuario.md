@@ -55,10 +55,11 @@ El carrito permite:
 
 En checkout:
 
-- se cargan datos de contacto y envío
-- se puede dejar un dato de contacto adicional opcional
+- se piden solo nombre, WhatsApp y barrio o ciudad
+- email y dirección exacta quedan como opcionales
+- se puede dejar una preferencia de contacto o un mensaje útil para el equipo
 - se genera la orden
-- se abre WhatsApp para coordinar pago y despacho con administración
+- se abre WhatsApp para coordinar pago, envío o retiro con administración
 
 ### Registro y login
 
@@ -70,6 +71,11 @@ El registro ahora incluye:
 - captcha matemático firmado por el servidor
 
 El captcha ayuda a reducir altas automáticas.
+
+Además:
+
+- en registro y login hay salida directa a WhatsApp para usuarios que prefieren no crear cuenta
+- el login recuerda mejor el flujo de seguimiento de pedidos y coordinación
 
 ## Admin
 

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { X, ShoppingBag, ArrowRight, Trash2, Plus, Minus } from "lucide-react";
 
 import { Button } from "@ggseeds/ui";
@@ -22,6 +23,8 @@ interface ProductSnapshot {
 
 export function CartDrawer() {
   const { items, drawerOpen, closeDrawer, removeItem, setQuantity } = useCart();
+  const pathname = usePathname();
+  const previousPathname = useRef(pathname);
   const [products, setProducts] = useState<ProductSnapshot[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -58,6 +61,13 @@ export function CartDrawer() {
     document.body.style.overflow = drawerOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [drawerOpen]);
+
+  useEffect(() => {
+    if (previousPathname.current !== pathname) {
+      closeDrawer();
+      previousPathname.current = pathname;
+    }
+  }, [pathname]);
 
   return (
     <>
@@ -181,7 +191,7 @@ export function CartDrawer() {
         </div>
 
         {/* Footer */}
-        {items.length > 0 && !loading && (
+        {items.length > 0 && !loading && products.length > 0 && (
           <div className="space-y-3 border-t border-[var(--line)] px-5 py-5">
             <div className="flex items-center justify-between text-sm">
               <span className="text-[color:var(--muted)]">Subtotal</span>
