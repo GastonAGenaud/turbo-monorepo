@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Instagram, MessageCircle, Send } from "lucide-react";
+import { Instagram, MessageCircle } from "lucide-react";
 
 import { ADMIN_WHATSAPP_DISPLAY, SHIPPING_COPY, buildWhatsAppUrl } from "@ggseeds/shared";
 
@@ -20,9 +20,6 @@ export function StoreFooter() {
             </a>
             <a href="https://instagram.com" target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] p-2 transition hover:text-[color:var(--accent)]">
               <Instagram className="h-4 w-4" />
-            </a>
-            <a href={buildWhatsAppUrl()} target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] p-2 transition hover:text-[color:var(--accent)]">
-              <Send className="h-4 w-4" />
             </a>
           </div>
         </div>
