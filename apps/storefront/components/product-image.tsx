@@ -37,9 +37,9 @@ export function ProductImage({
       src={src}
       alt={alt}
       fill
-      unoptimized
       sizes={sizes}
       priority={priority}
+      quality={75}
       className={className}
       onError={() => setHasError(true)}
     />

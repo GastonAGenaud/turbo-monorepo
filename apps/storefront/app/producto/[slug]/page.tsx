@@ -8,6 +8,8 @@ import { ProductImage } from "../../../components/product-image";
 import { getProductBySlug } from "../../../lib/catalog";
 import { AddToCartButton } from "./product-client";
 
+export const revalidate = 300;
+
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);

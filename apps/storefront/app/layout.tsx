@@ -22,12 +22,35 @@ const mono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
-export const metadata: Metadata = {
-  title: "GGseeds - Semillas legales en CABA",
-  description: "Genéticas premium para coleccionistas. Catálogo curado, despacho local y coordinación directa por WhatsApp.",
-};
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://ggseeds-storefront.vercel.app";
+const SITE_DESCRIPTION =
+  "Genéticas premium para coleccionistas. Catálogo curado, despacho local y coordinación directa por WhatsApp.";
 
-export const dynamic = "force-dynamic";
+export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "GGseeds — Semillas legales en CABA",
+    template: "%s · GGseeds",
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: "GGseeds",
+  keywords: ["semillas", "coleccionismo", "genética", "CABA", "Buenos Aires", "Dutch Passion", "GGseeds"],
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    locale: "es_AR",
+    url: "/",
+    siteName: "GGseeds",
+    title: "GGseeds — Semillas legales en CABA",
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GGseeds — Semillas legales en CABA",
+    description: SITE_DESCRIPTION,
+  },
+};
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (

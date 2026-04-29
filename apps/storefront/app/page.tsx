@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Clock3, MapPin, MessageCircle, ShieldCheck, Sparkles, Truck } from "lucide-react";
 
 import { ADMIN_WHATSAPP_DISPLAY } from "@ggseeds/shared";
@@ -8,6 +9,8 @@ import { ProductCard } from "../components/product-card";
 import { SketchfabHero } from "../components/sketchfab-hero";
 import { AMSTERDAM_STORY_IMAGE, CATEGORY_COPY, LEGAL_BULLETS, maskBrand } from "../lib/brand";
 import { getHomeData } from "../lib/catalog";
+
+export const revalidate = 300;
 
 export default async function HomePage() {
   const { categories, products, heroProduct } = await getHomeData();
@@ -180,7 +183,14 @@ export default async function HomePage() {
 
       <section id="nosotros" className="relative overflow-hidden rounded-[36px] border border-[var(--line)] bg-[color:var(--card)] p-8 md:p-12">
         <div className="absolute inset-0 opacity-20">
-          <img src={AMSTERDAM_STORY_IMAGE} alt="Canal de Amsterdam" className="h-full w-full object-cover grayscale" referrerPolicy="no-referrer" />
+          <Image
+            src={AMSTERDAM_STORY_IMAGE}
+            alt="Canal de Amsterdam"
+            fill
+            sizes="100vw"
+            quality={70}
+            className="object-cover grayscale"
+          />
           <div className="absolute inset-0 bg-[linear-gradient(90deg,var(--bg)_0%,rgba(7,9,13,0.88)_45%,transparent_100%)] dark:bg-[linear-gradient(90deg,#07090d_0%,rgba(7,9,13,0.9)_45%,transparent_100%)]" />
         </div>
 

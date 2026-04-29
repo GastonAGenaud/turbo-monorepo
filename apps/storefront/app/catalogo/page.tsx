@@ -6,6 +6,8 @@ import { Button } from "@ggseeds/ui";
 import { ProductCard } from "../../components/product-card";
 import { getCatalog } from "../../lib/catalog";
 
+export const revalidate = 300;
+
 export default async function CatalogPage({
   searchParams,
 }: {

@@ -8,6 +8,8 @@ import { db } from "@ggseeds/db";
 import { authOptions } from "../../lib/auth";
 import { ProfileForm } from "../../components/profile-form";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProfilePage() {
   const session = await getServerSession(authOptions);
 
