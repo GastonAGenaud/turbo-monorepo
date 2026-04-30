@@ -147,11 +147,18 @@ export async function getCatalog(filters: CatalogFilters) {
     }),
   ]);
 
-  // Apply Dutch/Merlin interleaving when sorting by price ascending (default)
-  const sortedItems =
-    !filters.sort || filters.sort === "price_asc"
-      ? interleaveByBrand(items)
-      : items;
+  // Always show in-stock items before out-of-stock ones, regardless of sort.
+  // The Dutch/Merlin interleave only applies to the default price_asc sort,
+  // and runs inside each stock bucket so the stock-first guarantee holds.
+  const isInStock = (item: { stockStatus: string; stock: number | null }) =>
+    item.stockStatus === "IN_STOCK" || (item.stock ?? 0) > 0;
+  const inStock = items.filter(isInStock);
+  const outOfStock = items.filter((item: any) => !isInStock(item));
+
+  const useInterleave = !filters.sort || filters.sort === "price_asc";
+  const sortedItems = useInterleave
+    ? [...interleaveByBrand(inStock), ...interleaveByBrand(outOfStock)]
+    : [...inStock, ...outOfStock];
 
   return {
     items: sortedItems,
