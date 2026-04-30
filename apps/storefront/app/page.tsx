@@ -36,7 +36,7 @@ export default async function HomePage() {
   ];
 
   return (
-    <div className="space-y-20 pb-10">
+    <div className="space-y-16 pb-10 md:space-y-20">
       <section className="relative grid gap-8 pt-4 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="glass-panel ambient-border relative overflow-hidden rounded-[32px] px-6 py-8 md:px-10 md:py-10">
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent_42%)]" />
@@ -121,9 +121,13 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <TrustRow />
+      <div className="relative -mt-6 md:-mt-10">
+        <TrustRow />
+      </div>
 
-      <StoreStats />
+      <div className="relative -mt-8 md:-mt-12 lg:px-6">
+        <StoreStats />
+      </div>
 
       <BrandShowcase />
 

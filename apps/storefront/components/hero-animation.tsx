@@ -1,16 +1,34 @@
 "use client";
 
+import Image from "next/image";
+
+import { AMSTERDAM_HERO_IMAGE } from "../lib/brand";
+
 /**
- * Hero animation — pure CSS + inline SVG.
- * Zero JS runtime cost, GPU-accelerated, ~0KB bundle impact.
- * Replaces Three.js (~600KB) for max performance.
+ * Hero animation — Amsterdam canal backdrop + leaf composition.
+ * Pure CSS + inline SVG on top, single optimized image as backdrop.
  */
 export function HeroAnimation() {
   return (
     <div className="hero-anim-root" aria-hidden="true">
+      {/* Atmospheric backdrop — Amsterdam canal at dusk */}
+      <div className="hero-backdrop">
+        <Image
+          src={AMSTERDAM_HERO_IMAGE}
+          alt=""
+          fill
+          sizes="(max-width: 1024px) 100vw, 720px"
+          quality={70}
+          priority
+          className="object-cover"
+        />
+        <div className="hero-backdrop-overlay" />
+      </div>
+
       {/* Ambient glow orbs */}
       <div className="orb orb-1" />
       <div className="orb orb-2" />
+      <div className="orb orb-amber" />
       <div className="orb orb-3" />
 
       {/* Main leaf */}
@@ -20,10 +38,10 @@ export function HeroAnimation() {
 
       {/* Ghost leaves */}
       <div className="leaf-wrap leaf-ghost-1">
-        <CannabisLeafSVG opacity={0.12} />
+        <CannabisLeafSVG opacity={0.1} />
       </div>
       <div className="leaf-wrap leaf-ghost-2">
-        <CannabisLeafSVG opacity={0.07} />
+        <CannabisLeafSVG opacity={0.06} />
       </div>
 
       {/* Floating particles */}
@@ -139,6 +157,24 @@ const CSS = `
     --leaf-vein: color-mix(in srgb, var(--accent, #0bc38f) 40%, white 60%);
   }
 
+  .hero-backdrop {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .hero-backdrop :global(img) {
+    filter: grayscale(0.45) brightness(0.55) contrast(1.05);
+    transform: scale(1.05);
+    animation: backdropDrift 28s ease-in-out infinite alternate;
+  }
+  .hero-backdrop-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 70% 35%, color-mix(in srgb, var(--accent-warm, #b8893f) 22%, transparent) 0%, transparent 45%),
+      linear-gradient(180deg, rgba(7, 9, 13, 0.32) 0%, rgba(7, 9, 13, 0.55) 40%, rgba(7, 9, 13, 0.78) 100%);
+  }
+
   /* Glow orbs */
   .orb {
     position: absolute;
@@ -157,6 +193,13 @@ const CSS = `
     background: color-mix(in srgb, #3b82f6 12%, transparent 88%);
     bottom: -40px; left: 5%;
     animation-delay: -2s;
+  }
+  .orb-amber {
+    width: 220px; height: 220px;
+    background: color-mix(in srgb, var(--accent-warm, #b8893f) 26%, transparent 74%);
+    bottom: 14%; right: 18%;
+    animation-delay: -1.5s;
+    filter: blur(70px);
   }
   .orb-3 {
     width: 200px; height: 200px;
@@ -202,6 +245,10 @@ const CSS = `
   }
 
   /* Keyframes */
+  @keyframes backdropDrift {
+    from { transform: scale(1.05) translate(0, 0); }
+    to   { transform: scale(1.1) translate(-18px, -12px); }
+  }
   @keyframes orbPulse {
     from { transform: scale(1) translate(0, 0); opacity: 0.7; }
     to   { transform: scale(1.18) translate(12px, -14px); opacity: 1; }
