@@ -13,6 +13,9 @@ Documentacion operativa y de infraestructura:
 
 - [docs/README.md](/Users/gastongenaud/Documents/Github/GGseeds/docs/README.md)
 - [docs/manual-usuario.md](/Users/gastongenaud/Documents/Github/GGseeds/docs/manual-usuario.md)
+- [docs/branding.md](/Users/gastongenaud/Documents/Github/GGseeds/docs/branding.md) — logo, iconos derivados, OG/Twitter images
+- [docs/flujo-e2e-prod.md](/Users/gastongenaud/Documents/Github/GGseeds/docs/flujo-e2e-prod.md) — flujo end-to-end + comparativa con Merlin Seeds
+- [docs/mejoras-ronda-2.md](/Users/gastongenaud/Documents/Github/GGseeds/docs/mejoras-ronda-2.md) — plan de mejoras post-deploy + Greenhouse + Basta de Lobby
 
 ## Estado actual
 
