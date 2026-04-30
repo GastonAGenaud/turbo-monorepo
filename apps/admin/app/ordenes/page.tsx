@@ -2,22 +2,39 @@ import { Card, CardContent, CardHeader, CardTitle } from "@ggseeds/ui";
 import { db } from "@ggseeds/db";
 
 import { AdminPageHeader } from "../../components/admin-page-header";
+import { AdminPagination } from "../../components/admin-pagination";
 import { OrderStatusSelect } from "../../components/order-status-select";
 import { requireAdminSession } from "../../lib/admin-session";
 
-export default async function OrdersPage() {
+const PAGE_SIZE = 25;
+
+export default async function OrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   await requireAdminSession();
 
-  const orders = await db.order.findMany({
-    include: {
-      items: true,
-      user: {
-        select: { email: true },
+  const params = await searchParams;
+  const pageParam = Array.isArray(params.page) ? params.page[0] : params.page;
+  const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
+
+  const [total, orders] = await Promise.all([
+    db.order.count(),
+    db.order.findMany({
+      include: {
+        items: true,
+        user: {
+          select: { email: true },
+        },
       },
-    },
-    orderBy: { createdAt: "desc" },
-    take: 200,
-  });
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE,
+    }),
+  ]);
+
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <div className="space-y-6">
@@ -29,7 +46,7 @@ export default async function OrdersPage() {
 
       <Card className="surface-panel rounded-[30px]">
         <CardHeader>
-          <CardTitle>Gestión de estados</CardTitle>
+          <CardTitle>Gestión de estados — {total.toLocaleString("es-AR")} órdenes</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {orders.map((order: any) => (
@@ -55,6 +72,7 @@ export default async function OrdersPage() {
               {order.notes ? <p className="mt-2 whitespace-pre-wrap text-xs text-[color:var(--muted)]">{order.notes}</p> : null}
             </div>
           ))}
+          <AdminPagination page={page} totalPages={totalPages} basePath="/ordenes" />
         </CardContent>
       </Card>
     </div>

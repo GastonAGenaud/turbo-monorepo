@@ -50,9 +50,9 @@ export default async function CategoriesPage() {
               });
             }}
           >
-            <input name="name" placeholder="Nombre" className="rounded-2xl border border-[var(--line)] bg-black/20 px-3 py-2.5" required />
-            <input name="slug" placeholder="slug" className="rounded-2xl border border-[var(--line)] bg-black/20 px-3 py-2.5" required />
-            <input name="description" placeholder="Descripción" className="rounded-2xl border border-[var(--line)] bg-black/20 px-3 py-2.5" />
+            <input type="text" name="name" placeholder="Nombre" autoComplete="off" className="rounded-2xl border border-[var(--line)] bg-black/20 px-3 py-2.5" required />
+            <input type="text" name="slug" placeholder="slug" pattern="[a-z0-9-]+" autoComplete="off" className="rounded-2xl border border-[var(--line)] bg-black/20 px-3 py-2.5 lowercase" required />
+            <input type="text" name="description" placeholder="Descripción (opcional)" autoComplete="off" className="rounded-2xl border border-[var(--line)] bg-black/20 px-3 py-2.5" />
             <button type="submit" className="rounded-full bg-[color:var(--accent)] px-4 py-2.5 text-black md:col-span-3">
               Guardar categoría
             </button>

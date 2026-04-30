@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -26,14 +27,21 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto w-full max-w-7xl px-4 py-4 md:px-6 lg:px-8">
           <div className="glass-panel ambient-border rounded-[28px] px-4 py-4 sm:px-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="space-y-2">
-                <p className="section-kicker">GGseeds Control Room</p>
-                <div>
-                  <Link href="/" className="font-serif-display text-3xl leading-none text-[color:var(--fg)]">
-                    GG<span className="text-[color:var(--accent)]">admin</span>
-                  </Link>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-[color:var(--muted)]">
-                    Gestión centralizada de catálogo, órdenes, usuarios e importaciones con la misma identidad editorial del storefront.
+              <div className="flex items-center gap-4">
+                <Link href="/" aria-label="GG Seeds Admin — inicio" className="shrink-0">
+                  <Image
+                    src="/logo.png"
+                    alt="GG Seeds"
+                    width={220}
+                    height={120}
+                    priority
+                    className="h-14 w-auto"
+                  />
+                </Link>
+                <div className="space-y-2">
+                  <p className="section-kicker">Control Room</p>
+                  <p className="max-w-xl text-sm leading-6 text-[color:var(--muted)]">
+                    Gestión centralizada de catálogo, órdenes, usuarios e importaciones.
                   </p>
                 </div>
               </div>
