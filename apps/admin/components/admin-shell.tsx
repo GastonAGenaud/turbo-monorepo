@@ -32,10 +32,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   <Image
                     src="/logo.png"
                     alt="GG Seeds"
-                    width={220}
-                    height={120}
+                    width={224}
+                    height={224}
                     priority
-                    className="h-14 w-auto"
+                    sizes="(max-width: 768px) 64px, 80px"
+                    className="h-16 w-16 md:h-20 md:w-20"
                   />
                 </Link>
                 <div className="space-y-2">

@@ -38,10 +38,11 @@ export function StoreNavbar() {
           <Image
             src="/logo.png"
             alt="GG Seeds"
-            width={200}
-            height={109}
+            width={224}
+            height={224}
             priority
-            className="h-10 w-auto"
+            sizes="(max-width: 768px) 56px, 80px"
+            className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16"
           />
         </Link>
 

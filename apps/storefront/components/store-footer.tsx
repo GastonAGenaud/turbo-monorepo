@@ -10,7 +10,14 @@ export function StoreFooter() {
       <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 text-sm md:grid-cols-[1.2fr_0.8fr_0.8fr_1fr] md:px-6 lg:px-8">
         <div className="space-y-5">
           <Link href="/" aria-label="GG Seeds — inicio" className="inline-flex">
-            <Image src="/logo.png" alt="GG Seeds" width={220} height={120} className="h-14 w-auto" />
+            <Image
+              src="/logo.png"
+              alt="GG Seeds"
+              width={240}
+              height={240}
+              sizes="80px"
+              className="h-20 w-20"
+            />
           </Link>
           <p className="max-w-sm leading-7 text-[color:var(--muted)]">
             Inspirados por la cultura de Amsterdam, reunimos genéticas de bancos reconocidos con atención cercana, stock vivo y coordinación simple desde Buenos Aires.
