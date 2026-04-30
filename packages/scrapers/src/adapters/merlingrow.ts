@@ -69,6 +69,10 @@ const GENERIC_CATEGORIES = new Set([
   "hibrida",
   "hibridas",
   "grandes-packs-x50",
+  // Categories the storefront filtered out as non-brand labels:
+  "ofertas",
+  "sin-categorizar",
+  "croppers",
 ]);
 
 const ATTRIBUTE_PATTERNS: Record<keyof ProductAttributes, RegExp[]> = {

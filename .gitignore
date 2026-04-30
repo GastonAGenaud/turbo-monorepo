@@ -12,3 +12,18 @@ test-results
 prisma/dev.db
 .vercel
 .env*.local
+
+# Build artifacts not worth tracking
+*.tsbuildinfo
+
+# Playwright MCP / debug screenshots
+.playwright-mcp/
+*.png
+*.jpeg
+*.jpg
+!apps/**/public/**/*.png
+!apps/**/public/**/*.jpg
+!apps/**/public/**/*.jpeg
+!docs/**/*.png
+!docs/**/*.jpg
+!docs/**/*.jpeg

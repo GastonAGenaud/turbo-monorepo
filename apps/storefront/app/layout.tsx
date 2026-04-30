@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Inter, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import "./globals.css";
 import { StoreFooter } from "../components/store-footer";
@@ -89,6 +91,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <main className="mx-auto w-full max-w-7xl px-4 py-8 md:px-6 lg:px-8">{children}</main>
           <StoreFooter />
         </AppProviders>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

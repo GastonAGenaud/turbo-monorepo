@@ -14,6 +14,8 @@
     "@ggseeds/db": "workspace:*",
     "@ggseeds/shared": "workspace:*",
     "@ggseeds/ui": "workspace:*",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "bcryptjs": "3.0.2",
     "lucide-react": "0.479.0",
     "next": "15.5.14",

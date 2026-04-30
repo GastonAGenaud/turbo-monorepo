@@ -8,6 +8,8 @@ import { getCatalog } from "../../lib/catalog";
 
 export const revalidate = 300;
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://ggseeds-storefront.vercel.app";
+
 export default async function CatalogPage({
   searchParams,
 }: {
@@ -31,8 +33,42 @@ export default async function CatalogPage({
     sort,
   });
 
+  const breadcrumbItems = [
+    { name: "Inicio", url: SITE_URL },
+    { name: "Catálogo", url: `${SITE_URL}/catalogo` },
+  ];
+  if (category) {
+    const cat = categories.find((c: any) => c.slug === category);
+    if (cat) {
+      breadcrumbItems.push({
+        name: cat.name as string,
+        url: `${SITE_URL}/catalogo?category=${category}`,
+      });
+    }
+  } else if (brand) {
+    breadcrumbItems.push({
+      name: brand,
+      url: `${SITE_URL}/catalogo?brand=${encodeURIComponent(brand)}`,
+    });
+  }
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: breadcrumbItems.map((item, idx) => ({
+      "@type": "ListItem",
+      position: idx + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+
   return (
     <div className="space-y-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
       <section className="glass-panel ambient-border overflow-hidden rounded-[32px] px-6 py-8 md:px-8 md:py-10">
         <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
           <div className="space-y-4">
