@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Button, Card, CardContent } from "@ggseeds/ui";
 
 import { useCart } from "./cart-provider";
+import { QuantityStepper } from "./quantity-stepper";
 import { extractProductsArray } from "../lib/cart-client";
 
 interface ProductSnapshot {
@@ -78,13 +79,11 @@ export function CartPageClient() {
               <p className="text-sm text-[color:var(--muted)]">${row.product.finalPrice.toLocaleString("es-AR")}</p>
             </div>
 
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                min={1}
+            <div className="flex items-center gap-3">
+              <QuantityStepper
                 value={row.quantity}
-                onChange={(event) => setQuantity(row.productId, Number(event.target.value))}
-                className="w-16 rounded border border-[var(--line)] bg-transparent px-2 py-1"
+                onChange={(value) => setQuantity(row.productId, value)}
+                ariaLabel={`Cantidad de ${row.product.name}`}
               />
               <Button variant="outline" className="rounded-full" onClick={() => removeItem(row.productId)}>
                 Quitar

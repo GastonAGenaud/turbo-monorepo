@@ -2,11 +2,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Clock3, MapPin, MessageCircle, ShieldCheck, Sparkles, Truck } from "lucide-react";
 
-import { ADMIN_WHATSAPP_DISPLAY } from "@ggseeds/shared";
+import { ADMIN_WHATSAPP_DISPLAY, buildWhatsAppUrl } from "@ggseeds/shared";
 import { Button } from "@ggseeds/ui";
 
+import { BrandShowcase } from "../components/brand-showcase";
 import { ProductCard } from "../components/product-card";
 import { SketchfabHero } from "../components/sketchfab-hero";
+import { StoreStats } from "../components/store-stats";
+import { TrustRow } from "../components/trust-row";
 import { AMSTERDAM_STORY_IMAGE, CATEGORY_COPY, LEGAL_BULLETS, maskBrand } from "../lib/brand";
 import { getHomeData } from "../lib/catalog";
 
@@ -16,18 +19,18 @@ export default async function HomePage() {
   const { categories, products, heroProduct } = await getHomeData();
   const highlights = [
     {
-      title: "Stock real",
-      text: "Actualizamos el catálogo para que consultes con una base más confiable antes de escribirnos.",
+      title: "Stock actualizado",
+      text: "Importamos el catálogo a diario para que consultes con una base confiable antes de escribirnos.",
       icon: Clock3,
     },
     {
-      title: "Colección curada",
+      title: "Selección curada",
       text: "Elegimos genéticas con criterio de banco, historia y consistencia, no por volumen.",
       icon: ShieldCheck,
     },
     {
-      title: "Atención humana",
-      text: "Pago, envío y seguimiento coordinados por WhatsApp con una persona real.",
+      title: "Atención por WhatsApp",
+      text: "Pago, envío y seguimiento coordinados con una persona real, sin bots.",
       icon: Truck,
     },
   ];
@@ -67,7 +70,14 @@ export default async function HomePage() {
                 </Link>
               </Button>
               <Button asChild variant="outline" className="rounded-full px-6">
-                <Link href="/#nosotros">Sobre nosotros</Link>
+                <a
+                  href={buildWhatsAppUrl("Hola GGseeds, quiero hacer una consulta antes de armar el pedido.")}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  Consultar por WhatsApp
+                </a>
               </Button>
             </div>
 
@@ -110,6 +120,12 @@ export default async function HomePage() {
           ) : null}
         </div>
       </section>
+
+      <TrustRow />
+
+      <StoreStats />
+
+      <BrandShowcase />
 
       <section className="grid gap-4 md:grid-cols-[1.15fr_0.85fr]" id="categorias">
         <div className="space-y-3">
