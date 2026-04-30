@@ -3,13 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import {
-  ADMIN_WHATSAPP_DISPLAY,
-  MANUAL_PAYMENT_COPY,
-  SHIPPING_COPY,
-  buildCheckoutWhatsAppMessage,
-  buildWhatsAppUrl,
-} from "@ggseeds/shared";
+import { buildCheckoutWhatsAppMessage, buildWhatsAppUrl } from "@ggseeds/shared";
 import { Button, Input, Label, Textarea } from "@ggseeds/ui";
 
 import { useCart } from "./cart-provider";
@@ -65,18 +59,6 @@ export function CheckoutForm() {
         await onSubmit(formData);
       }}
     >
-      <div className="glass-panel rounded-[28px] p-4 text-sm text-[color:var(--muted)]">
-        <p className="font-medium text-[color:var(--fg)]">Te pedimos solo lo necesario para avanzar.</p>
-        <p className="mt-2">{MANUAL_PAYMENT_COPY}</p>
-        <p className="mt-1">{SHIPPING_COPY}</p>
-        <p className="mt-1">
-          Si preferís resolver todo antes de enviar el pedido, podés escribirnos directo a{" "}
-          <a href={buildWhatsAppUrl()} target="_blank" rel="noreferrer" className="text-[color:var(--accent)]">
-            {ADMIN_WHATSAPP_DISPLAY}
-          </a>
-        </p>
-      </div>
-
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <Label htmlFor="fullName">Nombre y apellido</Label>

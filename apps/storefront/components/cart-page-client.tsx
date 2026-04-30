@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import { Button, Card, CardContent } from "@ggseeds/ui";
 
+import { CartCrossSell } from "./cart-cross-sell";
 import { useCart } from "./cart-provider";
 import { QuantityStepper } from "./quantity-stepper";
 import { extractProductsArray } from "../lib/cart-client";
@@ -106,6 +107,8 @@ export function CartPageClient() {
       <Button asChild className="w-full rounded-full">
         <Link href="/checkout">Finalizar compra</Link>
       </Button>
+
+      <CartCrossSell />
     </div>
   );
 }

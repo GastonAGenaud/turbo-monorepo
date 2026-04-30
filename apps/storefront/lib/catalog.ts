@@ -1,5 +1,7 @@
 import { db } from "@ggseeds/db";
 
+import { isRealBrand } from "./brand";
+
 interface CatalogFilters {
   query?: string;
   category?: string;
@@ -163,7 +165,7 @@ export async function getCatalog(filters: CatalogFilters) {
   return {
     items: sortedItems,
     categories,
-    brands: brands.map((item: any) => item.brand).filter(Boolean) as string[],
+    brands: (brands.map((item: any) => item.brand).filter(isRealBrand) as string[]),
   };
 }
 

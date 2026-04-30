@@ -52,10 +52,38 @@ export const metadata: Metadata = {
   },
 };
 
+const ORGANIZATION_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "GGseeds",
+  alternateName: "GG Seeds",
+  url: SITE_URL,
+  description: SITE_DESCRIPTION,
+  email: "hola@ggseeds.ar",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Buenos Aires",
+    addressRegion: "CABA",
+    addressCountry: "AR",
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer service",
+    telephone: "+54-9-351-326-1149",
+    availableLanguage: ["Spanish"],
+    areaServed: "AR",
+  },
+  sameAs: ["https://www.instagram.com/ggseeds.ar/"],
+};
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es">
       <body className={`${inter.variable} ${cormorant.variable} ${mono.variable}`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_JSON_LD) }}
+        />
         <AppProviders>
           <StoreNavbar />
           <main className="mx-auto w-full max-w-7xl px-4 py-8 md:px-6 lg:px-8">{children}</main>

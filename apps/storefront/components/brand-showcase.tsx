@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { db } from "@ggseeds/db";
 
-import { maskBrand } from "../lib/brand";
+import { isRealBrand, maskBrand } from "../lib/brand";
 
 async function getBrands() {
   try {
@@ -14,7 +14,7 @@ async function getBrands() {
     });
     return grouped
       .map((row) => ({ brand: row.brand as string, count: row._count._all }))
-      .filter((row) => row.brand && row.count > 0);
+      .filter((row) => isRealBrand(row.brand) && row.count > 0);
   } catch {
     return [];
   }

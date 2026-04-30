@@ -5,7 +5,7 @@ import { MessageCircle } from "lucide-react";
 import { Badge, Button } from "@ggseeds/ui";
 import { buildWhatsAppUrl } from "@ggseeds/shared";
 
-import { ProductImage } from "../../../components/product-image";
+import { ProductGallery } from "../../../components/product-gallery";
 import { getProductBySlug } from "../../../lib/catalog";
 import { maskBrand } from "../../../lib/brand";
 import { AddToCartButton } from "./product-client";
@@ -78,33 +78,21 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     },
   };
 
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Catálogo", item: `${SITE_URL}/catalogo` },
+      { "@type": "ListItem", position: 3, name: product.name, item: url },
+    ],
+  };
+
   return (
     <div className="grid gap-10 lg:grid-cols-[1fr_0.95fr]">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <div className="space-y-3">
-        <div className="ambient-border relative aspect-square overflow-hidden rounded-[30px] border border-[var(--line)] bg-[color:var(--card-strong)]">
-          <ProductImage
-            src={product.images[0]}
-            alt={product.name}
-            priority
-            className="object-cover"
-            fallbackClassName="flex h-full items-center justify-center bg-[#0d1117] text-sm text-[color:var(--muted)]"
-          />
-        </div>
-
-        <div className="grid grid-cols-4 gap-2">
-          {product.images.slice(0, 4).map((img: any) => (
-            <div key={img} className="relative aspect-square overflow-hidden rounded-2xl border border-[var(--line)] bg-[color:var(--card)]">
-              <ProductImage
-                src={img}
-                alt={product.name}
-                className="object-cover"
-                fallbackClassName="flex h-full items-center justify-center text-[10px] text-[color:var(--muted)]"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />
+      <ProductGallery images={product.images} alt={product.name} />
 
       <div className="glass-panel ambient-border space-y-6 rounded-[30px] p-7 md:p-8">
         <p className="text-[10px] uppercase tracking-[0.28em] text-[color:var(--muted)]">{brand}</p>
