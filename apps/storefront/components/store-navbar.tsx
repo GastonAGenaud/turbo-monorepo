@@ -31,7 +31,7 @@ export function StoreNavbar() {
   }, [lastAdded]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[color:var(--bg)]/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[color:var(--bg)]/95 backdrop-blur-xl supports-[backdrop-filter]:bg-[color:var(--bg)]/85">
       <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 md:px-6 lg:px-8">
         <Link href="/" className="text-lg font-semibold tracking-wide">
           GG<span className="text-[color:var(--accent)]">seeds</span>

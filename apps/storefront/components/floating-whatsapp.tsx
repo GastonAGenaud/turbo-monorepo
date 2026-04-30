@@ -19,7 +19,7 @@ export function FloatingWhatsapp() {
 
         {/* Tooltip */}
         <span className="pointer-events-none absolute right-16 whitespace-nowrap rounded-full border border-[var(--line)] bg-[color:var(--card-strong)] px-3 py-1.5 text-xs font-medium text-[color:var(--fg)] opacity-0 shadow-[var(--shadow)] transition-opacity duration-200 group-hover:opacity-100">
-          Te respondemos por WhatsApp
+          Hablemos por WhatsApp
         </span>
       </a>
     </div>

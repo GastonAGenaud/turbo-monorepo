@@ -101,8 +101,11 @@ export function CartPageClient() {
         </CardContent>
       </Card>
 
+      <p className="text-center text-xs text-[color:var(--muted)]">
+        Coordinamos pago y envío por WhatsApp después de tu pedido.
+      </p>
       <Button asChild className="w-full rounded-full">
-        <Link href="/checkout">Continuar checkout</Link>
+        <Link href="/checkout">Finalizar compra</Link>
       </Button>
     </div>
   );

@@ -7,7 +7,7 @@ export default function CheckoutPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="space-y-2">
-        <p className="section-kicker">Checkout asistido</p>
+        <p className="section-kicker">Tu pedido</p>
         <h1 className="font-serif-display text-5xl">Coordinemos tu pedido en un minuto.</h1>
         <p className="max-w-xl text-sm leading-7 text-[color:var(--muted)]">
           Cargá tu nombre, un WhatsApp y tu zona. El resto lo resolvemos con atención humana, sin pasos de más.

@@ -80,7 +80,7 @@ export function CheckoutForm() {
       <div className="grid gap-4 md:grid-cols-2">
         <div>
           <Label htmlFor="fullName">Nombre y apellido</Label>
-          <Input id="fullName" name="fullName" placeholder="Como querés que te identifiquemos" autoComplete="name" required />
+          <Input id="fullName" name="fullName" placeholder="Ej: Andrea Gómez" autoComplete="name" required />
         </div>
         <div>
           <Label htmlFor="phone">WhatsApp de contacto</Label>
@@ -100,7 +100,7 @@ export function CheckoutForm() {
       </div>
 
       <div>
-        <Label htmlFor="contactDetails">Cómo preferís que coordinemos</Label>
+        <Label htmlFor="contactDetails">Detalles para coordinar</Label>
         <Textarea
           id="contactDetails"
           name="contactDetails"
@@ -120,7 +120,7 @@ export function CheckoutForm() {
       </div>
 
       <div>
-        <Label htmlFor="notes">Mensaje para el equipo</Label>
+        <Label htmlFor="notes">Algo más que quieras decirnos</Label>
         <Textarea
           id="notes"
           name="notes"
@@ -128,8 +128,12 @@ export function CheckoutForm() {
         />
       </div>
 
+      <p className="text-xs leading-5 text-[color:var(--muted)]">
+        Tus datos se usan únicamente para coordinar tu pedido por WhatsApp. No los compartimos con terceros.
+      </p>
+
       <Button type="submit" className="rounded-full" disabled={loading || items.length === 0}>
-        {loading ? "Registrando pedido..." : "Enviar pedido y seguir por WhatsApp"}
+        {loading ? "Registrando pedido..." : "Enviar pedido por WhatsApp"}
       </Button>
 
       {message ? <p className="text-sm text-[color:var(--muted)]">{message}</p> : null}
