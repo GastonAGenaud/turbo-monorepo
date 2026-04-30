@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { MessageCircle, Search, ShieldCheck, ShoppingBag } from "lucide-react";
@@ -33,8 +34,15 @@ export function StoreNavbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[color:var(--bg)]/95 backdrop-blur-xl supports-[backdrop-filter]:bg-[color:var(--bg)]/85">
       <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 md:px-6 lg:px-8">
-        <Link href="/" className="text-lg font-semibold tracking-wide">
-          GG<span className="text-[color:var(--accent)]">seeds</span>
+        <Link href="/" aria-label="GG Seeds — inicio" className="flex items-center gap-2">
+          <Image
+            src="/logo.png"
+            alt="GG Seeds"
+            width={200}
+            height={109}
+            priority
+            className="h-10 w-auto"
+          />
         </Link>
 
         <nav className="hidden items-center gap-1 text-sm md:flex">

@@ -24,6 +24,10 @@ prisma/dev.db
 !apps/**/public/**/*.png
 !apps/**/public/**/*.jpg
 !apps/**/public/**/*.jpeg
+!apps/**/app/**/icon.png
+!apps/**/app/**/apple-icon.png
+!apps/**/app/**/opengraph-image.png
+!apps/**/app/**/twitter-image.png
 !docs/**/*.png
 !docs/**/*.jpg
 !docs/**/*.jpeg
