@@ -44,23 +44,9 @@ export function ProductCard({ product }: ProductCardProps) {
       </div>
       <CardContent className="space-y-4 p-4">
         <div className="space-y-2">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-[10px] uppercase tracking-[0.28em] text-[color:var(--muted)]">{maskBrand(product.brand) ?? "GG Seeds"}</p>
-            <span className="text-[10px] uppercase tracking-[0.24em] text-[color:var(--accent)]">
-              {isAvailable ? "Stock real" : "Agotado"}
-            </span>
-          </div>
-          <h3 className="font-serif-display text-2xl leading-tight text-[color:var(--fg)]">{product.name}</h3>
-          <p className="text-sm leading-6 text-[color:var(--muted)]">
-            {product.stockStatus === "UNKNOWN"
-              ? "La disponibilidad se confirma rápido por WhatsApp."
-              : isAvailable
-                ? "Disponible para coordinar compra, envío o retiro con atención directa."
-                : "Lo dejamos visible para seguimiento y aviso de reingreso."}
-          </p>
-          <div className="border-t border-[var(--line)] pt-3">
-            <p className="text-lg font-semibold text-[color:var(--fg)]">${product.finalPrice.toLocaleString("es-AR")}</p>
-          </div>
+          <p className="text-[10px] uppercase tracking-[0.28em] text-[color:var(--muted)]">{maskBrand(product.brand) ?? "GG Seeds"}</p>
+          <h3 className="font-serif-display text-xl leading-tight text-[color:var(--fg)]">{product.name}</h3>
+          <p className="pt-1 text-lg font-semibold text-[color:var(--fg)]">${product.finalPrice.toLocaleString("es-AR")}</p>
         </div>
 
         <div className="flex gap-2">

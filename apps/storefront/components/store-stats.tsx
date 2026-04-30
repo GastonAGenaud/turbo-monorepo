@@ -32,8 +32,8 @@ export async function StoreStats() {
   const items = [
     { value: `+${productCount}`, label: "Genéticas en catálogo" },
     { value: brandCount, label: "Bancos seleccionados" },
-    { value: categoryCount, label: "Categorías curadas" },
-    { value: "Buenos Aires", label: "Base operativa" },
+    { value: categoryCount, label: "Líneas genéticas" },
+    { value: "Córdoba · CABA", label: "Centro de distribución" },
   ];
 
   return (

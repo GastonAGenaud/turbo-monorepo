@@ -58,7 +58,7 @@ export default async function HomePage() {
                 Genéticas <span className="italic text-[color:var(--muted)]">premium</span> para coleccionistas.
               </h1>
               <p className="max-w-xl text-base leading-8 text-[color:var(--muted)]">
-                Curamos semillas de bancos reconocidos para coleccionismo y preservación genética. Catálogo vivo, trato directo y coordinación simple desde CABA a todo el país.
+                Seleccionamos y preservamos las mejores genéticas del mundo. Asesoramiento real y directo para que encuentres la próxima joya de tu colección.
               </p>
             </div>
 
@@ -142,9 +142,9 @@ export default async function HomePage() {
           <Link
             key={category.id}
             href={`/catalogo?category=${category.slug}`}
-            className="ambient-border group relative overflow-hidden rounded-[28px] border border-[var(--line)] bg-[linear-gradient(180deg,rgba(17,22,30,0.98),rgba(10,14,19,0.96))] p-6 transition duration-300 hover:-translate-y-1 hover:border-[color:var(--accent)]/30"
+            className="glass-panel ambient-border group relative overflow-hidden rounded-[28px] p-6 transition duration-300 hover:-translate-y-1 hover:border-[color:var(--accent)]/30"
           >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(28,230,179,0.1),transparent_35%)] opacity-0 transition group-hover:opacity-100" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,color-mix(in_srgb,var(--accent)_14%,transparent),transparent_35%)] opacity-0 transition group-hover:opacity-100" />
             <div className="relative space-y-6">
               <div className="flex items-center justify-between gap-4">
                 <span className="section-kicker">{category._count.products} productos</span>

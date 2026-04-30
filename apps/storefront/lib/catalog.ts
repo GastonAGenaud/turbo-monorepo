@@ -52,8 +52,8 @@ export async function getHomeData() {
       },
     }),
     db.product.findMany({
-      where: { isActive: true },
-      orderBy: { createdAt: "desc" },
+      where: { isActive: true, stockStatus: "IN_STOCK" },
+      orderBy: [{ stock: "desc" }, { createdAt: "desc" }],
       take: 8,
       include: {
         category: true,
@@ -119,13 +119,16 @@ export async function getCatalog(filters: CatalogFilters) {
   };
 
   // For the default "price_asc" sort we apply interleaving post-query,
-  // so fetch all by price asc. Other sorts keep their DB order.
-  const orderBy: any =
+  // so fetch all by price asc. Other sorts keep their DB order. Always
+  // surface in-stock items before out-of-stock ones, regardless of sort.
+  const tieBreaker: any =
     filters.sort === "price_desc"
       ? { finalPrice: "desc" }
       : filters.sort === "newest"
         ? { createdAt: "desc" }
         : { finalPrice: "asc" };
+
+  const orderBy: any = [{ stockStatus: "asc" }, tieBreaker];
 
   const [items, categories, brands] = await Promise.all([
     db.product.findMany({
