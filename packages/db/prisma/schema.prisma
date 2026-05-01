@@ -172,9 +172,12 @@ model Order {
   notes         String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  archivedAt    DateTime?
 
   user  User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   items OrderItem[]
+
+  @@index([archivedAt])
 }
 
 model OrderItem {
