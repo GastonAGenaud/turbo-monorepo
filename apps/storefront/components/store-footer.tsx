@@ -23,10 +23,24 @@ export function StoreFooter() {
             Inspirados por la cultura de Amsterdam, reunimos genéticas de bancos reconocidos con atención cercana, stock vivo y coordinación simple desde Buenos Aires.
           </p>
           <div className="flex gap-3 text-[color:var(--muted)]">
-            <a href={buildWhatsAppUrl()} target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] p-2 transition hover:text-[color:var(--accent)]">
+            <a
+              href={buildWhatsAppUrl()}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="WhatsApp de GG Seeds"
+              title="WhatsApp"
+              className="rounded-full border border-[var(--line)] p-2 transition hover:text-[color:var(--accent)]"
+            >
               <MessageCircle className="h-4 w-4" />
             </a>
-            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="rounded-full border border-[var(--line)] p-2 transition hover:text-[color:var(--accent)]">
+            <a
+              href="https://www.instagram.com/gg_seeds/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Instagram @gg_seeds"
+              title="Instagram"
+              className="rounded-full border border-[var(--line)] p-2 transition hover:text-[color:var(--accent)]"
+            >
               <Instagram className="h-4 w-4" />
             </a>
           </div>

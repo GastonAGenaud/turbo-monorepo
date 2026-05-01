@@ -75,7 +75,7 @@ const ORGANIZATION_JSON_LD = {
     availableLanguage: ["Spanish"],
     areaServed: "AR",
   },
-  sameAs: ["https://www.instagram.com/ggseeds.ar/"],
+  sameAs: ["https://www.instagram.com/gg_seeds/"],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
